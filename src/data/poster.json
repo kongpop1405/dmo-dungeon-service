@@ -1,0 +1,126 @@
+{
+  "brand": {
+    "name": "DMO Dungeon Service",
+    "tagline": "รับเซอร์วิสดันต่างๆ",
+    "status": "OPEN",
+    "hours": ["รับบริการทุกวัน", "08.00 - 24.00 น."],
+    "subhead": "งานไว • ปลอดภัย • ไว้ใจได้",
+    "contact": { "fb": "Kongpop RatSpin" },
+    "benefits": [
+      { "ic": "🛡️", "t": "ปลอดภัย 100%" },
+      { "ic": "⏱️", "t": "ทำงานไว ไม่โกง" },
+      { "ic": "👥", "t": "ทีมงานมืออาชีพ บริการดี" }
+    ],
+    "extra": [
+      { "ic": "🏆", "t": "ช่วยลงดัน" },
+      { "ic": "🎯", "t": "ฟาร์มของ / ไอเทม" },
+      { "ic": "⚔️", "t": "ทำเควส / เควสรายวัน" },
+      { "ic": "📅", "t": "รับทำรายวัน / รายสัปดาห์" }
+    ],
+    "promos": [
+      { "name": "ซื้อ 10 รอบ", "off": "ลด 10%" },
+      { "name": "ซื้อ 20 รอบ", "off": "ลด 15%" }
+    ],
+    "pay": ["KBank", "SCB", "TrueMoney Wallet"],
+    "contactNote": "ตอบไว • ไม่ทิ้งงาน • ได้ของชัวร์"
+  },
+  "dungeons": [
+    {
+      "id": "kaiser",
+      "node": "01",
+      "title": "Kaiser's Lab",
+      "titleTh": "ดันเจี้ยนฐานทัพของไกเซอร์",
+      "boss": "KIMERAMON",
+      "bossTh": "คิเมรามอน",
+      "mat": "พลังชั่วร้ายของคิเมรามอน",
+      "drop": "ต่างหูแห่งความเมตตาที่เปล่งประกาย",
+      "theme": "kaiser",
+      "image": "../assets/boss/kimeramon.png",
+      "packages": [
+        { "name": "ง่าย · 1 รอบ", "price": 20 },
+        { "name": "ง่าย · 3 รอบ", "price": 50 },
+        { "name": "ทั่วไป · 1 รอบ", "price": 70 },
+        { "name": "ทั่วไป · 3 รอบ", "price": 200, "featured": true }
+      ]
+    },
+    {
+      "id": "darkweb",
+      "node": "02",
+      "title": "Dark Web",
+      "titleTh": "ดันเจี้ยนดาร์กเว็บ",
+      "boss": "ARMAGEDDEMON",
+      "bossTh": "อามาเกมอน",
+      "mat": "ข้อมูลของคุรามอน",
+      "drop": "สร้อยคอปาฏิหาริย์ที่เปล่งประกาย",
+      "theme": "darkweb",
+      "image": "../assets/boss/armageddemon.png",
+      "packages": [
+        { "name": "1 รอบ", "price": 40 },
+        { "name": "3 รอบ", "price": 100, "featured": true }
+      ]
+    },
+    {
+      "id": "kaiser-dungeon",
+      "node": "03",
+      "title": "Digimon Kaiser",
+      "titleTh": "ดันเจี้ยนดิจิมอนไกเซอร์",
+      "boss": "BLACKMETALGREYMON",
+      "bossTh": "แบล็คเมทัลเกรย์มอน",
+      "mat": "พลังชั่วร้าย",
+      "drop": "ชุดความกล้า · ความหวัง · จิตใจแห่งรัก",
+      "theme": "kaiser-dungeon",
+      "image": "../assets/boss/blackmetalgreymon.png",
+      "packages": [
+        { "name": "1 รอบ", "price": 40 },
+        { "name": "5 รอบ", "price": 170, "featured": true }
+      ]
+    },
+    {
+      "id": "destruction",
+      "node": "04",
+      "title": "Destruction & Revival",
+      "titleTh": "ดันเจี้ยนการทำลายล้างและการฟื้นฟู",
+      "boss": "SUSANOOMON",
+      "bossTh": "ซูซาโนะโอมอน",
+      "mat": "ชิ้นส่วนดิจิโค๊ด",
+      "drop": "ดิจิไวซ์ : ครอสโหลดเดอร์ (Xros Loader)",
+      "theme": "destruction",
+      "image": "../assets/boss/susanoomon.png",
+      "packages": [
+        { "name": "1 รอบ", "price": 20 },
+        { "name": "5 รอบ", "price": 80, "featured": true }
+      ]
+    },
+    {
+      "id": "royalbase",
+      "node": "05",
+      "title": "Royal Base",
+      "titleTh": "ดันเจี้ยนรอยัลเบส (ระดับยาก)",
+      "boss": "DEATH-X-MON",
+      "bossTh": "เดธ X มอน",
+      "mat": "—",
+      "drop": "—",
+      "theme": "royalbase",
+      "image": "../assets/boss/deathxmon.png",
+      "packages": [
+        { "name": "1 รอบ", "price": 30 },
+        { "name": "5 รอบ", "price": 130, "featured": true }
+      ]
+    },
+    {
+      "id": "market",
+      "node": "06",
+      "title": "Marketplace",
+      "titleTh": "ดันเจี้ยนแหล่งร้านค้า",
+      "boss": "GULUSGAMMAMON",
+      "bossTh": "กูลัส แกมมามอน",
+      "mat": "—",
+      "drop": "—",
+      "theme": "market",
+      "image": "../assets/boss/gulusgammamon.png",
+      "packages": [
+        { "name": "1 รอบ", "price": 50, "featured": true }
+      ]
+    }
+  ]
+}

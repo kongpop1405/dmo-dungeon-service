@@ -1,0 +1,101 @@
+<meta charset="utf-8">
+<title>PLAN — PptxGenJS Generator</title>
+<style>
+  :root{--bg:#0b1020;--panel:#121a2e;--line:#22304f;--blue:#00b4ff;--gold:#ffd700;--txt:#dcecff;--mut:#7f9bc4;--red:#ff5a6a;--grn:#3fdd7a}
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--bg);color:var(--txt);font:15px/1.6 system-ui,'Segoe UI',sans-serif;padding:32px;max-width:1100px;margin:0 auto}
+  h1{font-size:30px;color:var(--gold);letter-spacing:.04em}
+  h2{font-size:18px;color:var(--blue);margin:28px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:baseline}
+  .num{font:12px monospace;color:var(--mut)}
+  .sub{color:var(--mut);font-size:14px;margin-top:6px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:14px 0}
+  code{background:#0007;padding:1px 6px;border-radius:4px;font-size:13px;color:var(--gold)}
+  ul{margin:8px 0 8px 20px}li{margin:4px 0}
+  table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13px}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+  th{background:#0a1326;color:var(--blue)}
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}
+  .tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center}
+  .tile b{font-size:24px;color:var(--gold);display:block}
+  .tile span{font-size:12px;color:var(--mut)}
+  .warn{border-left:3px solid var(--red);background:#2a121a}
+  .ok{border-left:3px solid var(--grn)}
+  .step{counter-increment:s;position:relative;padding-left:38px}
+  .step::before{content:counter(s);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#001;font-weight:800;display:grid;place-items:center;font-size:13px}
+  ol.steps{list-style:none;counter-reset:s;padding:0}
+  ol.steps>li{margin:14px 0}
+</style>
+
+<h1>PLAN · PptxGenJS Generator</h1>
+<p class="sub">สร้าง gen script ใหม่ (gen script เดิมหายจากรีโป) → output <code>dmo-4cards.pptx</code> ที่แก้ text / รูป boss / สี / slide ได้</p>
+
+<div class="tiles">
+  <div class="tile"><b>4</b><span>slides (NODE 01–04)</span></div>
+  <div class="tile"><b>11.25"</b><span>จัตุรัส 1:1</span></div>
+  <div class="tile"><b>1</b><span>JSON = single source</span></div>
+  <div class="tile"><b>PptxGenJS</b><span>npm, Node v22 ✅</span></div>
+</div>
+
+<h2><span class="num">01</span> Goal</h2>
+<div class="panel">
+  <ul>
+    <li>มี gen script (<code>node build_pptx.mjs</code>) → regen pptx ได้ทุกเมื่อ</li>
+    <li>แก้ข้อมูลที่เดียว (<code>data/poster.json</code>) → reflect ทั้ง 4 slide</li>
+    <li>รองรับ: แก้ราคา/จำนวน/text · ใส่รูป boss จริง · ปรับสี/ธีม · เพิ่ม/ลบ slide (slide = element ใน array)</li>
+  </ul>
+</div>
+
+<h2><span class="num">02</span> โครงสร้างไฟล์ใหม่</h2>
+<div class="panel">
+  <table>
+    <tr><th>ไฟล์</th><th>หน้าที่</th></tr>
+    <tr><td><code>data/poster.json</code></td><td>single source — array 4 dungeon (id, node, title, titleTh, boss, bossTh, mat, drop, dropIcon, theme, image, packages[])</td></tr>
+    <tr><td><code>build_pptx.mjs</code></td><td>อ่าน poster.json → PptxGenJS วาดทีละ slide → เขียน <code>dmo-4cards.pptx</code></td></tr>
+    <tr><td><code>assets/boss/*.png</code></td><td>รูป boss (ดู §05 — ตอนนี้มีแค่ kimeramon)</td></tr>
+    <tr><td><code>package.json</code></td><td>dep <code>pptxgenjs</code> + script <code>"pptx": "node build_pptx.mjs"</code></td></tr>
+  </table>
+  <p class="sub">data ดึงจาก slide XML เดิม (มีครบ 4 dungeon แล้ว) — ไม่ต้องพิมพ์มือ</p>
+</div>
+
+<h2><span class="num">03</span> Layout 1 slide (เลียน pptx เดิม, coordinate-based)</h2>
+<div class="panel">
+  <table>
+    <tr><th>Zone</th><th>Element</th><th>ตำแหน่งคร่าว</th></tr>
+    <tr><td>Header</td><td>— DUNGEON SERVICE — / NODE·0n/04 / STATUS·OPEN</td><td>บนสุด</td></tr>
+    <tr><td>Title</td><td>▸ DUNGEON · ชื่อ EN (gold) · ชื่อ TH</td><td>ใต้ header</td></tr>
+    <tr><td>Boss</td><td>▸ TARGET BOSS · ชื่อ · วัตถุดิบ + กล่อง BOSS PORTRAIT (รูป)</td><td>กลางซ้าย/ขวา</td></tr>
+    <tr><td>Drop</td><td>▸ MAIN DROP · icon · ชื่อไอเทม</td><td>กลาง</td></tr>
+    <tr><td>Packages</td><td>SERVICE PACKAGES // ตาราง 4 แถว (name/qty/price)</td><td>ล่าง</td></tr>
+  </table>
+  <p class="sub">accent color ต่อ slide จาก <code>theme</code> (kaiser=blue, darkweb=red, kaiser-dungeon=purple, destruction=cyan) — ตรง <code>index.html</code></p>
+</div>
+
+<h2><span class="num">04</span> Build steps</h2>
+<ol class="steps">
+  <li class="step">extract data จาก slide XML → เขียน <code>data/poster.json</code> (4 dungeon ครบ)</li>
+  <li class="step"><code>npm init -y</code> + <code>npm i pptxgenjs</code> (local node_modules — gitignore)</li>
+  <li class="step">เขียน <code>build_pptx.mjs</code>: loop poster.json → addSlide → วาด text/shape/รูป ต่อ zone (§03)</li>
+  <li class="step">map theme→accent color · ฝัง boss image (มี=ใส่จริง, ไม่มี=กล่อง placeholder + ชื่อ)</li>
+  <li class="step"><code>node build_pptx.mjs</code> → เปิด pptx ใน PowerPoint เช็คตา</li>
+</ol>
+
+<h2><span class="num">05</span> รูป boss <span style="color:var(--grn)">(แก้แล้ว ✅)</span></h2>
+<div class="panel ok">
+  <table>
+    <tr><th>Boss</th><th>ไฟล์</th></tr>
+    <tr><td>Kimeramon</td><td style="color:var(--grn)">✅ assets/boss/kimeramon.png</td></tr>
+    <tr><td>Armageddemon</td><td style="color:var(--grn)">✅ assets/boss/armageddemon.png</td></tr>
+    <tr><td>BlackMetalGreymon</td><td style="color:var(--grn)">✅ assets/boss/blackmetalgreymon.png</td></tr>
+    <tr><td>Susanoomon</td><td style="color:var(--grn)">✅ assets/boss/susanoomon.png</td></tr>
+  </table>
+  <p class="sub">คัดจากรูปที่ user เพิ่มมา (removebg โปร่ง) rename ตรง boss · 4 ภาพ Canva = layout เป้าหมายล่าสุด · ราคา Dark Web = <b>45 / 450 / 550</b> (1รอบ / ฮาซาร์ด / ปาฏิหาริย์)</p>
+</div>
+
+<h2><span class="num">06</span> นอก scope</h2>
+<div class="panel">
+  <ul>
+    <li>ไม่แตะ <code>index.html</code> / <code>4-card-system/*</code> (HTML แยกจาก pptx — JSON เป็นตัวกลางใหม่)</li>
+    <li>ไม่ commit / push (รอ user สั่ง)</li>
+    <li>ไม่ลบ pptx เดิมจนกว่า gen ใหม่ผ่านตา</li>
+  </ul>
+</div>
