@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMO Dungeon Service — ไอเทมปลดร่าง</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Share+Tech+Mono&family=Kanit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --deep:#020912; --base:#04101F; --panel:rgba(8,20,40,.78);
+    --blue:#00B4FF; --gold:#FFD700; --silver:#E6F2FF;
+    --txt:#DCEEFF; --mut:#6E8FB8; --grid:rgba(0,180,255,.05); --grn:#3FDD7A;
+  }
+  body{
+    background:#020912; color:var(--txt); font-family:'Kanit',sans-serif;
+    display:flex; justify-content:center; padding:24px 12px;
+  }
+  .poster{
+    position:relative; width:1080px; max-width:100%;
+    background:radial-gradient(ellipse 90% 50% at 50% 0%,#0c2344 0%,#081a33 45%,#06122a 100%);
+    border:1px solid rgba(0,180,255,.25); overflow:hidden;
+    padding:34px 34px 28px; display:flex; flex-direction:column; gap:18px;
+  }
+  .poster::before{
+    content:''; position:absolute; inset:0;
+    background-image:
+      linear-gradient(0deg,var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:46px 46px; pointer-events:none; z-index:0;
+  }
+  .poster > *{position:relative; z-index:1}
+  .frame-c{position:absolute; width:34px; height:34px; border:2px solid var(--blue); z-index:5; pointer-events:none; opacity:.7}
+  .frame-c.tl{top:12px;left:12px;border-right:none;border-bottom:none}
+  .frame-c.tr{top:12px;right:12px;border-left:none;border-bottom:none}
+  .frame-c.bl{bottom:12px;left:12px;border-right:none;border-top:none}
+  .frame-c.br{bottom:12px;right:12px;border-left:none;border-top:none}
+
+  /* ═══ HEADER ═══ */
+  .ph{text-align:center; border-bottom:1px solid rgba(0,180,255,.22); padding-bottom:16px}
+  .ph .eyebrow{font-family:'Orbitron',sans-serif; font-size:12px; font-weight:600; letter-spacing:.34em; color:var(--mut)}
+  .ph .eyebrow::before{content:'— '} .ph .eyebrow::after{content:' —'}
+  .ph .t1{font-family:'Orbitron',sans-serif; font-size:42px; font-weight:900; letter-spacing:.03em; line-height:1; margin-top:5px;
+    background:linear-gradient(180deg,#FFE680 0%,#FFD700 50%,#C99700 100%); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+  .ph .t2{font-family:'Orbitron',sans-serif; font-size:17px; font-weight:700; letter-spacing:.26em; color:var(--blue); margin-top:7px}
+  .ph .t2::before{content:'// '} .ph .t2::after{content:' //'}
+  .ph .note{display:inline-block; margin-top:9px; font-size:13px; color:var(--txt);
+    border:1px solid rgba(0,180,255,.4); border-radius:30px; padding:4px 18px; background:rgba(0,180,255,.08)}
+
+  /* ═══ ITEM GRID 3-col ═══ */
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; align-items:start}
+  .it{
+    --tone:#00B4FF; --tdim:rgba(0,180,255,.5); --tsoft:rgba(0,180,255,.10); --tacc:#4FD0FF;
+    position:relative; overflow:hidden; border:1px solid var(--tdim);
+    background:radial-gradient(ellipse 100% 55% at 50% 18%,var(--tsoft),transparent 60%), var(--panel);
+    box-shadow:inset 0 0 50px rgba(0,0,0,.45);
+    display:flex; flex-direction:column; padding:0;
+  }
+  .it::after{content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--tone); box-shadow:0 0 14px var(--tone); z-index:4}
+  .it[data-t="kaiser"]        {--tone:#00B4FF;--tdim:rgba(0,180,255,.5);--tsoft:rgba(0,180,255,.14);--tacc:#4FD0FF}
+  .it[data-t="darkweb"]       {--tone:#B26BFF;--tdim:rgba(178,107,255,.5);--tsoft:rgba(178,107,255,.16);--tacc:#C99CFF}
+  .it[data-t="kaiser-dungeon"]{--tone:#00B4FF;--tdim:rgba(0,180,255,.5);--tsoft:rgba(0,180,255,.14);--tacc:#4FD0FF}
+  .it[data-t="destruction"]   {--tone:#FF9D2E;--tdim:rgba(255,157,46,.5);--tsoft:rgba(255,157,46,.16);--tacc:#FFB85C}
+  .it[data-t="royalbase"]     {--tone:#FF4D6A;--tdim:rgba(255,77,106,.5);--tsoft:rgba(255,77,106,.16);--tacc:#FF7D93}
+  .it[data-t="market"]        {--tone:#FF5FC8;--tdim:rgba(255,95,200,.5);--tsoft:rgba(255,95,200,.16);--tacc:#FF94DB}
+
+  /* stage รูปดิจิมอนเต็ม — สูงพอดีรูป ไม่ยืด */
+  .it-stage{position:relative; aspect-ratio:1/1}
+  .it-stage .halo{position:absolute; inset:8% 10% 8% 10%; border-radius:50%;
+    background:radial-gradient(circle,var(--tsoft) 0%,transparent 64%); filter:blur(12px); opacity:.9}
+  .it-stage .img{position:absolute; inset:2px 2px 30px;
+    background-repeat:no-repeat; background-position:center; background-size:contain;
+    filter:drop-shadow(0 8px 18px rgba(0,0,0,.7)) drop-shadow(0 0 12px var(--tone)) brightness(1.06) contrast(1.08) saturate(1.12)}
+  .it-badge{position:absolute; top:12px; left:12px; z-index:3;
+    font-family:'Orbitron',sans-serif; font-size:11px; font-weight:700; letter-spacing:.12em; color:#0a1422;
+    background:var(--tone); padding:4px 10px; border-radius:3px}
+  .it-dg{position:absolute; bottom:8px; left:0; right:0; z-index:3; text-align:center;
+    font-family:'Orbitron',sans-serif; font-size:18px; font-weight:800; color:var(--tacc);
+    letter-spacing:.04em; text-shadow:0 2px 6px rgba(0,0,0,.9)}
+
+  /* body */
+  .it-body{flex:none; display:flex; flex-direction:column; gap:10px; padding:18px 16px 14px;
+    border-bottom:1px solid var(--tdim); background:rgba(0,0,0,.32)}
+  .it-name{font-family:'Kanit'; font-size:15px; font-weight:700; color:var(--txt); line-height:1.2; text-align:center}
+  .it-nameen{font-family:'Orbitron',sans-serif; font-size:9px; font-weight:600; letter-spacing:.14em; color:var(--mut); text-transform:uppercase; text-align:center}
+  .it-tip{border:1px solid var(--tdim); background:rgba(0,0,0,.45); padding:8px; margin-top:2px}
+  /* frame อิงรูปสั้นสุด (source-of-sin 312x290) -> รูปยาวกว่าโดน crop ก้น */
+  .it-tip .frame{aspect-ratio:312/290; overflow:hidden; display:block}
+  .it-tip img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block; image-rendering:auto}
+  .it-tipcap{font-family:'Orbitron',sans-serif; font-size:9px; font-weight:600; letter-spacing:.14em;
+    color:var(--mut); text-align:center; margin-bottom:6px}
+  .it-tipcap::before{content:'▾ '} .it-tipcap::after{content:' ▾'}
+
+  /* ═══ FOOTER ═══ */
+  .pf{text-align:center; font-size:13px; color:var(--mut); line-height:1.7; padding-top:12px; border-top:1px solid rgba(0,180,255,.18)}
+  .pf b{color:var(--gold)} .pf .grn{color:var(--grn)}
+  .pay-row{display:flex; gap:8px; justify-content:center; margin:6px 0}
+  .pay-chip{font-size:12px; font-weight:700; color:#fff; padding:5px 12px; border-radius:6px; border:1px solid rgba(255,255,255,.2)}
+  .pay-chip.kbank{background:#0a8f3c} .pay-chip.scb{background:#4e2a84} .pay-chip.true{background:#ff5722}
+</style>
+</head>
+<body>
+  <div class="poster" id="poster">
+    <span class="frame-c tl"></span><span class="frame-c tr"></span>
+    <span class="frame-c bl"></span><span class="frame-c br"></span>
+
+    <div class="grid" id="grid"></div>
+  </div>
+
+<script>
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+fetch('data/poster.json').then(r=>r.json()).then(d=>{
+  const u = d.unlockItems;
+
+  document.getElementById('grid').innerHTML = u.items.map(it => {
+    return `
+      <div class="it" data-t="${it.theme}">
+        <div class="it-body">
+          <div>
+            <div class="it-name">${esc(it.name)}</div>
+            <div class="it-nameen">${esc(it.nameEn||'')}</div>
+          </div>
+          <div class="it-tip">
+            <div class="it-tipcap">รายละเอียดในเกม</div>
+            <div class="frame"><img src="${it.tooltip}" alt="${esc(it.name)}"></div>
+          </div>
+        </div>
+        <div class="it-stage">
+          <div class="halo"></div>
+          <div class="img" style="background-image:url('${it.image}')"></div>
+          <div class="it-dg">${esc(it.digimonEn)}</div>
+        </div>
+      </div>`;
+  }).join('');
+});
+</script>
+</body>
+</html>

@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "serve": "python -m http.server 8777",
-    "export": "node build/export_poster.mjs"
+    "export": "node build/export_poster.mjs",
+    "export:dungeons": "node build/export_dungeons.mjs",
+    "export:pricelist": "node build/export_pricelist.mjs",
+    "export:items": "node build/export_items.mjs"
   },
   "devDependencies": {
     "playwright": "^1.61.0"
