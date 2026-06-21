@@ -24,6 +24,55 @@
     "pay": ["KBank", "SCB", "TrueMoney Wallet"],
     "contactNote": "ตอบไว • ไม่ทิ้งงาน • ได้ของชัวร์"
   },
+  "unlockItems": {
+    "title": "ไอเทมปลดร่างดิจิมอน",
+    "subtitle": "Digivolution Unlock Items",
+    "note": "ปลดร่างขั้นสูง · ของแท้ในเกม · ส่งไว",
+    "items": [
+      {
+        "id": "armageddemon-pkg",
+        "name": "แพ็คเกจกำเนิดอามาเกมอนใหม่",
+        "nameEn": "Armageddemon Origin Package",
+        "digimon": "อามาเกมอน",
+        "digimonEn": "ARMAGEDDEMON",
+        "image": "../assets/boss/armageddemon.png",
+        "tooltip": "../assets/tooltips/armageddemon-pkg.png",
+        "theme": "darkweb",
+        "kind": "ไอเทมเติมเงิน",
+        "desc": "แพ็กเกจสำหรับช่วยพักอามาเกมอน",
+        "reqs": []
+      },
+      {
+        "id": "apocalymon-pkg",
+        "name": "แพ็คเกจกำเนิดอาโพคาลิมอนใหม่",
+        "nameEn": "Apocalymon Origin Package",
+        "digimon": "อาโพคาลิมอน",
+        "digimonEn": "APOCALYMON",
+        "image": "../assets/boss/apocalymon.png",
+        "tooltip": "../assets/tooltips/apocalymon-pkg.png",
+        "theme": "kaiser",
+        "kind": "ไอเทมเติมเงิน",
+        "desc": "แพ็กเกจสำหรับช่วยพักอาโพคาลิมอน",
+        "reqs": []
+      },
+      {
+        "id": "source-of-sin",
+        "name": "เดอะ ซอร์ส ออฟ ซิน",
+        "nameEn": "The Source of Sin",
+        "digimon": "โอดุโดมอน",
+        "digimonEn": "OGUDOMON",
+        "image": "../assets/boss/ogudomon.png",
+        "tooltip": "../assets/tooltips/source-of-sin.png",
+        "theme": "destruction",
+        "kind": "สปิริตฮีโวลูชั่น",
+        "desc": "ที่มาของบาปและความชั่วร้ายทั้งหมด",
+        "reqs": [
+          { "k": "เลเวลดิจิมอน", "v": "70" },
+          { "k": "จำนวนที่ต้องใช้", "v": "7 ชิ้น" }
+        ]
+      }
+    ]
+  },
   "dungeons": [
     {
       "id": "kaiser",

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMO Dungeon Service — ตารางสรุปราคา</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Share+Tech+Mono&family=Kanit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --deep:#020912; --base:#04101F; --panel:rgba(8,20,40,.78);
+    --blue:#00B4FF; --gold:#FFD700; --silver:#E6F2FF;
+    --txt:#DCEEFF; --mut:#6E8FB8; --grid:rgba(0,180,255,.05); --grn:#3FDD7A;
+  }
+  body{
+    background:#020912; color:var(--txt); font-family:'Kanit',sans-serif;
+    display:flex; justify-content:center; padding:24px 12px;
+  }
+  .poster{
+    position:relative; width:1080px; max-width:100%;
+    background:radial-gradient(ellipse 90% 45% at 50% 0%,#0c2344 0%,#081a33 45%,#06122a 100%);
+    border:1px solid rgba(0,180,255,.25); overflow:hidden;
+    padding:36px 38px 30px; display:flex; flex-direction:column; gap:22px;
+  }
+  .poster::before{
+    content:''; position:absolute; inset:0;
+    background-image:
+      linear-gradient(0deg,var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:46px 46px; pointer-events:none; z-index:0;
+  }
+  .poster > *{position:relative; z-index:1}
+  .frame-c{position:absolute; width:34px; height:34px; border:2px solid var(--blue); z-index:5; pointer-events:none; opacity:.7}
+  .frame-c.tl{top:12px;left:12px;border-right:none;border-bottom:none}
+  .frame-c.tr{top:12px;right:12px;border-left:none;border-bottom:none}
+  .frame-c.bl{bottom:12px;left:12px;border-right:none;border-top:none}
+  .frame-c.br{bottom:12px;right:12px;border-left:none;border-top:none}
+
+  /* ═══ HEADER ═══ */
+  .ph{text-align:center; border-bottom:1px solid rgba(0,180,255,.22); padding-bottom:18px}
+  .ph .eyebrow{font-family:'Orbitron',sans-serif; font-size:13px; font-weight:600; letter-spacing:.36em; color:var(--mut)}
+  .ph .eyebrow::before{content:'— '} .ph .eyebrow::after{content:' —'}
+  .ph .t1{font-family:'Orbitron',sans-serif; font-size:48px; font-weight:900; letter-spacing:.04em; line-height:1; margin-top:5px;
+    background:linear-gradient(180deg,#FFE680 0%,#FFD700 50%,#C99700 100%); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+  .ph .t2{font-family:'Orbitron',sans-serif; font-size:22px; font-weight:700; letter-spacing:.28em; color:var(--blue); margin-top:6px}
+  .ph .t2::before{content:'// '} .ph .t2::after{content:' //'}
+
+  /* ═══ DUNGEON BLOCK ═══ */
+  .list{display:flex; flex-direction:column; gap:14px}
+  .dg{
+    --tone:#00B4FF; --tdim:rgba(0,180,255,.5); --tsoft:rgba(0,180,255,.10); --tacc:#4FD0FF;
+    position:relative; border:1px solid var(--tdim); background:
+      linear-gradient(90deg,var(--tsoft),transparent 55%), var(--panel);
+    padding:16px 22px; overflow:hidden;
+  }
+  .dg::before{content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--tone); box-shadow:0 0 14px var(--tone)}
+  .dg[data-t="kaiser"]        {--tone:#00B4FF;--tdim:rgba(0,180,255,.5);--tsoft:rgba(0,180,255,.12);--tacc:#4FD0FF}
+  .dg[data-t="darkweb"]       {--tone:#B26BFF;--tdim:rgba(178,107,255,.5);--tsoft:rgba(178,107,255,.14);--tacc:#C99CFF}
+  .dg[data-t="kaiser-dungeon"]{--tone:#00B4FF;--tdim:rgba(0,180,255,.5);--tsoft:rgba(0,180,255,.12);--tacc:#4FD0FF}
+  .dg[data-t="destruction"]   {--tone:#FF9D2E;--tdim:rgba(255,157,46,.5);--tsoft:rgba(255,157,46,.14);--tacc:#FFB85C}
+  .dg[data-t="royalbase"]     {--tone:#FF4D6A;--tdim:rgba(255,77,106,.5);--tsoft:rgba(255,77,106,.14);--tacc:#FF7D93}
+  .dg[data-t="market"]        {--tone:#FF5FC8;--tdim:rgba(255,95,200,.5);--tsoft:rgba(255,95,200,.14);--tacc:#FF94DB}
+
+  .dg-head{display:flex; align-items:baseline; gap:12px; margin-bottom:12px}
+  .dg-node{font-family:'Share Tech Mono',monospace; font-size:18px; color:var(--tone); opacity:.8}
+  .dg-name{font-family:'Orbitron',sans-serif; font-size:22px; font-weight:800; color:var(--tacc); text-transform:uppercase; letter-spacing:.01em; line-height:1}
+  .dg-nameth{font-size:14px; color:var(--mut); margin-left:auto; text-align:right}
+  .dg-boss{font-size:12px; color:var(--mut); margin-left:6px}
+
+  .pkgs{display:flex; flex-wrap:wrap; gap:10px}
+  .pkg{flex:1 1 0; min-width:120px; border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.28);
+    padding:9px 14px; display:flex; flex-direction:column; gap:3px; text-align:center}
+  .pkg.feat{border:1px solid var(--tdim); background:linear-gradient(135deg,var(--tsoft),rgba(0,0,0,.3))}
+  .pkg .pn{font-size:12px; color:var(--mut); white-space:nowrap}
+  .pkg.feat .pn{color:var(--tacc)}
+  .pkg .pp{font-family:'Orbitron',sans-serif; font-size:26px; font-weight:900; color:var(--tacc); line-height:.95}
+  .pkg .pp .u{font-family:'Kanit'; font-size:11px; font-weight:400; color:var(--mut); margin-left:3px}
+  .pkg .star{font-size:10px; color:var(--gold); letter-spacing:.1em}
+
+  /* ═══ PROMO + FOOTER ═══ */
+  .promo{display:flex; gap:14px; align-items:stretch}
+  .promo-c{flex:1; border:1px solid rgba(255,215,0,.35); background:rgba(255,215,0,.06); padding:14px 18px; text-align:center}
+  .promo-c .pt{font-size:13px; color:var(--txt)}
+  .promo-c .po{font-family:'Orbitron',sans-serif; font-size:24px; font-weight:800; color:var(--gold); text-shadow:0 0 10px rgba(255,215,0,.4); margin-top:3px}
+  .pf{text-align:center; font-size:14px; color:var(--mut); line-height:1.7; padding-top:6px; border-top:1px solid rgba(0,180,255,.18)}
+  .pf b{color:var(--gold)} .pf .grn{color:var(--grn)}
+  .pay-row{display:flex; gap:8px; justify-content:center; margin:8px 0}
+  .pay-chip{font-size:12px; font-weight:700; color:#fff; padding:5px 12px; border-radius:6px; border:1px solid rgba(255,255,255,.2)}
+  .pay-chip.kbank{background:#0a8f3c} .pay-chip.scb{background:#4e2a84} .pay-chip.true{background:#ff5722}
+</style>
+</head>
+<body>
+  <div class="poster" id="poster">
+    <span class="frame-c tl"></span><span class="frame-c tr"></span>
+    <span class="frame-c bl"></span><span class="frame-c br"></span>
+
+    <div class="ph">
+      <div class="eyebrow">Digimon Masters Online</div>
+      <div class="t1">DUNGEON SERVICE</div>
+      <div class="t2">ตารางสรุปราคาทุกดันเจี้ยน</div>
+    </div>
+
+    <div class="list" id="list"></div>
+
+    <div class="promo" id="promo"></div>
+
+    <div class="pf" id="footer"></div>
+  </div>
+
+<script>
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+fetch('data/poster.json').then(r=>r.json()).then(d=>{
+  const b = d.brand;
+  const total = d.dungeons.length;
+
+  document.getElementById('list').innerHTML = d.dungeons.map((dg,i) => {
+    const node = String(i+1).padStart(2,'0');
+    const pkgs = dg.packages.map(p =>
+      `<div class="pkg${p.featured?' feat':''}">
+         <div class="pn">${esc(p.name)}</div>
+         <div class="pp">${p.price.toLocaleString()}<span class="u">บาท</span></div>
+         ${p.featured?'<div class="star">★ แนะนำ</div>':''}
+       </div>`).join('');
+    return `
+      <div class="dg" data-t="${dg.theme}">
+        <div class="dg-head">
+          <span class="dg-node">${node}/${String(total).padStart(2,'0')}</span>
+          <span class="dg-name">${esc(dg.title)}</span>
+          <span class="dg-boss">· ${esc(dg.boss)}</span>
+          <span class="dg-nameth">${esc(dg.titleTh)}</span>
+        </div>
+        <div class="pkgs">${pkgs}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('promo').innerHTML = (b.promos||[]).map(p =>
+    `<div class="promo-c"><div class="pt">${esc(p.name)}</div><div class="po">${esc(p.off)}</div></div>`).join('');
+
+  const payClass = {KBank:'kbank', SCB:'scb', 'TrueMoney Wallet':'true'};
+  const chips = (b.pay||[]).map(p => `<span class="pay-chip ${payClass[p]||''}">${esc(p)}</span>`).join('');
+  document.getElementById('footer').innerHTML =
+    `<div class="pay-row">${chips}</div>` +
+    `ติดต่อ <b>${esc(b.contact?.fb||'')}</b> · ${(b.hours||[]).join(' ')}<br>` +
+    `<span class="grn">${esc(b.contactNote||'')}</span>`;
+});
+</script>
+</body>
+</html>
