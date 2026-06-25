@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMO — ปรับเรท T</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --deep:#020912; --panel:#0a1a30; --line:rgba(0,180,255,.22);
+    --blue:#00B4FF; --gold:#FFD700; --txt:#DCEEFF; --mut:#6E8FB8; --grn:#3FDD7A;
+  }
+  body{background:var(--deep); color:var(--txt); font-family:'Segoe UI',Tahoma,sans-serif;
+    padding:24px 14px; display:flex; justify-content:center}
+  .wrap{width:760px; max-width:100%; display:flex; flex-direction:column; gap:18px}
+  h1{font-size:22px; color:var(--blue); letter-spacing:.04em}
+  h1 small{display:block; font-size:13px; color:var(--mut); font-weight:400; margin-top:3px}
+
+  .ctrl{display:flex; flex-wrap:wrap; gap:18px; align-items:flex-end;
+    background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px}
+  .fld{display:flex; flex-direction:column; gap:5px}
+  .fld label{font-size:12px; color:var(--mut)}
+  .fld input,.fld select{background:#04101f; color:var(--txt); border:1px solid var(--line);
+    border-radius:7px; padding:9px 11px; font-size:15px; width:130px}
+  .fld input:focus,.fld select:focus{outline:none; border-color:var(--blue)}
+  .rate-hint{font-size:12px; color:var(--grn)}
+
+  table{width:100%; border-collapse:collapse; background:var(--panel);
+    border:1px solid var(--line); border-radius:10px; overflow:hidden}
+  th,td{padding:9px 12px; text-align:left; font-size:14px; border-bottom:1px solid rgba(255,255,255,.05)}
+  th{background:#08203c; color:var(--blue); font-size:12px; letter-spacing:.05em; text-transform:uppercase}
+  tr.grp td{background:#06182e; color:var(--gold); font-weight:700; font-size:13px}
+  td.baht input{width:70px; background:#04101f; color:var(--txt); border:1px solid var(--line);
+    border-radius:6px; padding:5px 7px; font-size:14px; text-align:right}
+  td.t{font-family:'Consolas',monospace; color:var(--grn); font-weight:700; font-size:16px}
+  td.raw{color:var(--mut); font-size:12px; font-family:'Consolas',monospace}
+  td.eff{color:var(--mut); font-size:12px; font-family:'Consolas',monospace}
+  tfoot td{background:#08203c; font-weight:700; color:var(--txt)}
+
+  .out{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px}
+  .out h2{font-size:13px; color:var(--blue); margin-bottom:10px; letter-spacing:.05em}
+  textarea{width:100%; height:330px; background:#04101f; color:var(--txt); border:1px solid var(--line);
+    border-radius:8px; padding:12px; font-family:'Consolas',monospace; font-size:13px; line-height:1.55; resize:vertical}
+  .btn{margin-top:10px; background:var(--blue); color:#02101f; border:none; border-radius:7px;
+    padding:9px 18px; font-size:14px; font-weight:700; cursor:pointer}
+  .btn:hover{background:#33c6ff}
+  .copied{color:var(--grn); font-size:13px; margin-left:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ปรับเรท T — Dungeon Service
+    <small>แก้ราคาบาท + เรท → คำนวณ T ใหม่ ปัดลงตัวอัตโนมัติ แล้วก๊อปข้อความไปโพสต์</small>
+  </h1>
+
+  <div class="ctrl">
+    <div class="fld">
+      <label>เรท (บาท ได้ 1T)</label>
+      <input id="rate" type="number" step="0.01" value="0.45">
+    </div>
+    <div class="fld">
+      <label>ปัด T ลงตัว</label>
+      <select id="round">
+        <option value="0">ไม่ปัด</option>
+        <option value="5" selected>ใกล้สุด 5</option>
+        <option value="10">ใกล้สุด 10</option>
+      </select>
+    </div>
+    <div class="rate-hint" id="hint"></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>รายการ</th><th>บาท</th><th>T</th><th>raw</th><th>เรทจริง</th></tr>
+    </thead>
+    <tbody id="rows"></tbody>
+    <tfoot>
+      <tr><td>รวมขายหมด</td><td class="baht" id="sumBaht"></td><td class="t" id="sumT"></td><td colspan="2"></td></tr>
+    </tfoot>
+  </table>
+
+  <div class="out">
+    <h2>// ข้อความโพสต์ //</h2>
+    <textarea id="post" readonly></textarea>
+    <button class="btn" onclick="copyPost()">คัดลอกข้อความ</button>
+    <span class="copied" id="copied"></span>
+  </div>
+</div>
+
+<script>
+const DATA = [
+  {grp:"คิเมรามอน (ฐานทัพของไกเซอร์)", rows:[
+    {n:"ง่าย • 1 รอบ", baht:20},
+    {n:"ง่าย • 3 รอบ", baht:50},
+    {n:"ทั่วไป • 1 รอบ", baht:60},
+    {n:"ทั่วไป • 3 รอบ", baht:170},
+  ]},
+  {grp:"อามาเกมอน (ดาร์กเว็บ)", rows:[
+    {n:"1 รอบ", baht:30},
+    {n:"3 รอบ", baht:80},
+  ]},
+  {grp:"แบล็คเมทัลเกรย์มอน (ดิจิมอนไกเซอร์)", rows:[
+    {n:"1 รอบ", baht:35, tail:"ลงเองได้"},
+    {n:"5 รอบ", baht:160, tail:"ลงเอง"},
+  ]},
+  {grp:"ซูซาโนโอมอน (การทำลายล้างและการฟื้นฟู)", rows:[
+    {n:"1 รอบ", baht:20, tail:"ลงเองได้"},
+    {n:"5 รอบ", baht:80, tail:"ลงเองได้"},
+  ]},
+  {grp:"เดกซ์มอน / Death-X-mon (รอยัลเบส ระดับยาก)", rows:[
+    {n:"1 รอบ", baht:30, tail:"ลงเองได้"},
+    {n:"5 รอบ", baht:130, tail:"ลงเองได้"},
+  ]},
+  {grp:"กูลุสแกมมามอน (ดันเจี้ยนแหล่งร้านค้า)", rows:[
+    {n:"1 รอบ", baht:50},
+  ]},
+];
+
+const $ = id => document.getElementById(id);
+
+function calcT(baht, rate, round){
+  const raw = baht / rate;
+  if(round == 0) return {t: Math.round(raw*10)/10, raw};
+  const t = Math.round(raw/round)*round;
+  return {t, raw};
+}
+
+function render(){
+  const rate = parseFloat($("rate").value) || 0.45;
+  const round = parseInt($("round").value);
+  $("hint").textContent = `1T = ${rate}฿  •  1฿ = ${(1/rate).toFixed(3)}T`;
+
+  let html = "", sumBaht = 0, sumT = 0;
+  DATA.forEach(g=>{
+    html += `<tr class="grp"><td colspan="5">| ${g.grp}</td></tr>`;
+    g.rows.forEach(r=>{
+      const {t, raw} = calcT(r.baht, rate, round);
+      const eff = (r.baht / t).toFixed(3);
+      sumBaht += r.baht; sumT += t;
+      html += `<tr>
+        <td>${r.n}${r.tail? `  <span style="color:var(--mut)">${r.tail}</span>`:""}</td>
+        <td class="baht"><input type="number" data-key="${r.key=g.grp+'|'+r.n}" value="${r.baht}"></td>
+        <td class="t">${t}T</td>
+        <td class="raw">${raw.toFixed(1)}</td>
+        <td class="eff">${eff}฿/T</td>
+      </tr>`;
+    });
+  });
+  $("rows").innerHTML = html;
+  $("sumBaht").textContent = sumBaht + "฿";
+  $("sumT").textContent = sumT + "T";
+
+  $("rows").querySelectorAll("input[data-key]").forEach(inp=>{
+    inp.addEventListener("input", ()=>{
+      const [grp,name] = inp.dataset.key.split("|");
+      const row = DATA.find(g=>g.grp===grp).rows.find(r=>r.n===name);
+      row.baht = parseFloat(inp.value)||0;
+      render();
+    });
+  });
+
+  buildPost(rate, round);
+}
+
+function buildPost(rate, round){
+  let out = "[DUNGEON SERVICE]\n";
+  DATA.forEach(g=>{
+    out += `\n | ${g.grp}\n`;
+    g.rows.forEach(r=>{
+      const {t} = calcT(r.baht, rate, round);
+      out += `${r.n} : ${r.baht} ฿ / ${t}T${r.tail? "  "+r.tail:""}\n`;
+    });
+  });
+  $("post").value = out.trimEnd();
+}
+
+function copyPost(){
+  navigator.clipboard.writeText($("post").value).then(()=>{
+    $("copied").textContent = "คัดลอกแล้ว ✓";
+    setTimeout(()=>$("copied").textContent="", 1800);
+  });
+}
+
+$("rate").addEventListener("input", render);
+$("round").addEventListener("change", render);
+render();
+</script>
+</body>
+</html>

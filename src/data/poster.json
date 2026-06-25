@@ -87,9 +87,9 @@
       "image": "../assets/boss/kimeramon.png",
       "packages": [
         { "name": "ง่าย · 1 รอบ", "price": 20 },
-        { "name": "ง่าย · 3 รอบ", "price": 50 },
-        { "name": "ทั่วไป · 1 รอบ", "price": 70 },
-        { "name": "ทั่วไป · 3 รอบ", "price": 200, "featured": true }
+        { "name": "ง่าย · 3 รอบ", "price": 45 },
+        { "name": "ทั่วไป · 1 รอบ", "price": 65 },
+        { "name": "ทั่วไป · 3 รอบ", "price": 180, "featured": true }
       ]
     },
     {
@@ -104,8 +104,8 @@
       "theme": "darkweb",
       "image": "../assets/boss/armageddemon.png",
       "packages": [
-        { "name": "1 รอบ", "price": 40 },
-        { "name": "3 รอบ", "price": 100, "featured": true }
+        { "name": "1 รอบ", "price": 35 },
+        { "name": "3 รอบ", "price": 90, "featured": true }
       ]
     },
     {
@@ -120,8 +120,8 @@
       "theme": "kaiser-dungeon",
       "image": "../assets/boss/blackmetalgreymon.png",
       "packages": [
-        { "name": "1 รอบ", "price": 40 },
-        { "name": "5 รอบ", "price": 170, "featured": true }
+        { "name": "1 รอบ", "price": 35 },
+        { "name": "5 รอบ", "price": 155, "featured": true }
       ]
     },
     {
@@ -137,7 +137,7 @@
       "image": "../assets/boss/susanoomon.png",
       "packages": [
         { "name": "1 รอบ", "price": 20 },
-        { "name": "5 รอบ", "price": 80, "featured": true }
+        { "name": "5 รอบ", "price": 70, "featured": true }
       ]
     },
     {
@@ -152,8 +152,8 @@
       "theme": "royalbase",
       "image": "../assets/boss/deathxmon.png",
       "packages": [
-        { "name": "1 รอบ", "price": 30 },
-        { "name": "5 รอบ", "price": 130, "featured": true }
+        { "name": "1 รอบ", "price": 25 },
+        { "name": "5 รอบ", "price": 115, "featured": true }
       ]
     },
     {
@@ -168,7 +168,7 @@
       "theme": "market",
       "image": "../assets/boss/gulusgammamon.png",
       "packages": [
-        { "name": "1 รอบ", "price": 50, "featured": true }
+        { "name": "1 รอบ", "price": 45, "featured": true }
       ]
     }
   ]
