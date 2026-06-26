@@ -1,0 +1,29 @@
+{
+  "brand": {
+    "eyebrow": "DIGIMON MASTERS ONLINE",
+    "t1": "DUNGEON",
+    "t2": "SERVICE",
+    "status": "OPEN",
+    "hours": ["รับบริการทุกวัน", "08.00 - 24.00 น."],
+    "subhead": "งานไว • ปลอดภัย 100% • ไว้ใจได้",
+    "contact": { "fb": "Kongpop RatSpin" },
+    "contactNote": "ตอบไว • ไม่ทิ้งงาน • ได้ของชัวร์",
+    "pay": ["KBank", "SCB", "TrueMoney Wallet"]
+  },
+  "dungeon": {
+    "node": "07",
+    "tier": "NORMAL",
+    "title": "MASTER 2 CHALLENGE",
+    "titleTh": "ดันเจี้ยนมาสเตอร์2 ชาเลนจ์",
+    "theme": "master2",
+    "grade": { "rank": "A", "time": "12:59", "wipe": "0 / 5" },
+    "info": [
+      { "ic": "🎚️", "k": "ระดับความยาก", "v": "ระดับทั่วไป" },
+      { "ic": "👥", "k": "จำนวนสมาชิก", "v": "สูงสุด 4 คน" },
+      { "ic": "🎫", "k": "ไอเทมที่ใช้เข้า", "v": "บัตรผ่านมาสเตอร์ 2 ชาเลนจ์ × 1" },
+      { "ic": "⏱️", "k": "เวลาเฉลี่ยต่อรอบ", "v": "~13 นาที" },
+      { "ic": "✅", "k": "เงื่อนไขเข้าร่วม", "v": "ไม่มีเงื่อนไข" }
+    ],
+    "price": { "label": "1 รอบ", "value": 70, "unit": "บาท" }
+  }
+}

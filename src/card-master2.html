@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMO — Master 2 Challenge Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Share+Tech+Mono&family=Kanit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --deep:#020912; --base:#04101F; --panel:rgba(8,20,40,.78);
+    --blue:#00B4FF; --gold:#FFD700; --silver:#E6F2FF;
+    --txt:#DCEEFF; --mut:#6E8FB8; --grid:rgba(0,180,255,.05); --grn:#3FDD7A;
+    --tone:#00B4FF; --tdim:rgba(0,180,255,.5); --tsoft:rgba(0,180,255,.12); --tacc:#4FD0FF;
+  }
+  body{
+    background:#020912; color:var(--txt); font-family:'Kanit',sans-serif;
+    display:flex; justify-content:center; padding:24px 12px;
+  }
+  /* portrait 1080x1350 (FB 4:5) — content น้อย → stack กลางให้สมดุล */
+  .poster{
+    position:relative; width:1080px; height:1350px; max-width:100%;
+    background:radial-gradient(ellipse 90% 45% at 50% 0%,#0c2344 0%,#081a33 45%,#06122a 100%);
+    border:1px solid rgba(0,180,255,.25); overflow:hidden;
+    padding:46px 48px 42px; display:flex; flex-direction:column; gap:30px;
+  }
+  .poster::before{
+    content:''; position:absolute; inset:0;
+    background-image:
+      linear-gradient(0deg,var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:46px 46px; pointer-events:none; z-index:0;
+  }
+  .poster::after{
+    content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:radial-gradient(ellipse 80% 50% at 50% 40%,var(--tsoft),transparent 64%);
+  }
+  .poster > *{position:relative; z-index:1}
+
+  .frame-c{position:absolute; width:36px; height:36px; border:2px solid var(--tone); z-index:5; pointer-events:none; opacity:.7}
+  .frame-c.tl{top:14px;left:14px;border-right:none;border-bottom:none}
+  .frame-c.tr{top:14px;right:14px;border-left:none;border-bottom:none}
+  .frame-c.bl{bottom:14px;left:14px;border-right:none;border-top:none}
+  .frame-c.br{bottom:14px;right:14px;border-left:none;border-top:none}
+
+  /* ═══ HEADER ═══ */
+  .ph{display:flex; justify-content:space-between; align-items:flex-start;
+      border-bottom:1px solid rgba(0,180,255,.22); padding-bottom:20px;}
+  .ph-l .eyebrow{font-family:'Orbitron',sans-serif; font-size:14px; font-weight:600; letter-spacing:.34em; color:var(--mut)}
+  .ph-l .eyebrow::before{content:'— '} .ph-l .eyebrow::after{content:' —'}
+  .ph-l .t1{font-family:'Orbitron',sans-serif; font-size:52px; font-weight:900; letter-spacing:.04em; line-height:1;
+    background:linear-gradient(180deg,#FFE680 0%,#FFD700 50%,#C99700 100%); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.5)); margin-top:5px}
+  .ph-l .tag{font-size:14px; color:var(--mut); letter-spacing:.05em; margin-top:7px}
+  .ph-l .tag b{color:var(--blue)}
+  .ph-r{text-align:right; display:flex; flex-direction:column; gap:7px; padding-top:6px}
+  .ph-r .ln{font-family:'Orbitron',sans-serif; font-size:13px; letter-spacing:.2em}
+  .ph-r .ln .lab{color:var(--mut)} .ph-r .ln .val{color:var(--tacc)}
+  .ph-r .st .val{color:var(--grn); text-shadow:0 0 10px rgba(63,221,122,.5)}
+  .ph-r .st .val::before{content:'• '}
+
+  /* ═══ TITLE BLOCK ═══ */
+  .titleblk{text-align:center}
+  .titleblk .kicker{font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; letter-spacing:.3em; color:var(--tacc)}
+  .titleblk .kicker::before{content:'// '} .titleblk .kicker::after{content:' //'}
+  .titleblk .dg-title{font-family:'Orbitron',sans-serif; font-size:62px; font-weight:900; line-height:.98; letter-spacing:.01em;
+    color:var(--tacc); text-transform:uppercase; text-shadow:0 2px 4px rgba(0,0,0,.6), 0 0 14px var(--tdim); margin-top:8px}
+  .titleblk .dg-titleth{font-size:22px; font-weight:600; color:var(--txt); margin-top:10px}
+
+  /* ═══ SCREENSHOT STAGE — content หลัก, ใหญ่เต็มกว้าง ═══ */
+  .shots{flex:1; display:flex; flex-direction:column; gap:18px; min-height:0}
+  .shot{position:relative; border:1px solid var(--tdim); background:rgba(0,0,0,.35); overflow:hidden;
+    box-shadow:inset 0 0 30px rgba(0,0,0,.5), 0 6px 24px rgba(0,0,0,.4)}
+  .shot::before{content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--tone); box-shadow:0 0 14px var(--tone); z-index:3}
+  .shot .cap{position:absolute; top:11px; left:14px; z-index:4; font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700;
+    letter-spacing:.2em; color:var(--tacc); background:rgba(2,9,18,.8); border:1px solid var(--tdim); padding:5px 14px}
+  .shot img{width:100%; display:block}
+  .shot.result{flex:0 0 auto}
+  .shot.select{flex:1 1 auto; min-height:0; display:flex}
+  .shot.select img{object-fit:cover; object-position:top center}
+
+  /* ═══ PRICE BAR ═══ */
+  .price-card{border:1px solid var(--gold); background:linear-gradient(120deg,rgba(255,215,0,.14),rgba(0,0,0,.28));
+    box-shadow:inset 0 0 50px rgba(255,215,0,.08); padding:22px 40px;
+    display:flex; align-items:center; justify-content:space-between}
+  .price-card .lab{font-family:'Orbitron',sans-serif; font-size:60px; font-weight:900; letter-spacing:.02em; color:var(--txt); text-transform:uppercase; line-height:.85}
+  .price-card .v{font-family:'Orbitron',sans-serif; font-size:72px; font-weight:900; color:var(--gold); line-height:.82;
+    text-shadow:0 2px 5px rgba(0,0,0,.7), 0 0 16px rgba(255,215,0,.45)}
+  .price-card .v .u{font-family:'Kanit'; font-size:24px; font-weight:500; color:var(--txt); margin-left:9px}
+</style>
+</head>
+<body>
+  <div class="poster" id="poster">
+    <span class="frame-c tl"></span><span class="frame-c tr"></span>
+    <span class="frame-c bl"></span><span class="frame-c br"></span>
+
+    <div class="ph">
+      <div class="ph-l">
+        <div class="eyebrow" id="eyebrow"></div>
+        <div class="t1">DUNGEON SERVICE</div>
+        <div class="tag" id="tag"></div>
+      </div>
+    </div>
+
+    <div class="titleblk">
+      <div class="kicker">DUNGEON</div>
+      <div class="dg-title" id="dgTitle"></div>
+      <div class="dg-titleth" id="dgTitleTh"></div>
+    </div>
+
+    <div class="shots">
+      <div class="shot result"><span class="cap">CLEAR RESULT</span><img id="shotResult" alt=""></div>
+      <div class="shot select"><span class="cap">DUNGEON</span><img id="shotSelect" alt=""></div>
+    </div>
+
+    <div class="price-card" id="priceCard"></div>
+  </div>
+
+<script>
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+fetch('data/card-master2.json').then(r=>r.json()).then(d=>{
+  const b=d.brand, dg=d.dungeon;
+  eyebrow.textContent=b.eyebrow;
+  tag.innerHTML=(b.subhead||'').replace(/(100%)/,'<b>$1</b>');
+
+  dgTitle.textContent=dg.title;
+  dgTitleTh.textContent=dg.titleTh;
+
+  priceCard.innerHTML=`
+    <div class="lab">${esc(dg.price.label)}</div>
+    <div class="v">${dg.price.value.toLocaleString()}<span class="u">${esc(dg.price.unit)}</span></div>`;
+
+  shotResult.src = window.__SHOT_RESULT__ || '../imagie.png';
+  shotSelect.src = window.__SHOT_SELECT__ || '../image-cropped.png';
+});
+</script>
+</body>
+</html>
