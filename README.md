@@ -1,4 +1,4 @@
-# DMO Dungeon Service — FB Poster Generator
+# DMO Poster Studio — FB Poster Generator
 
 โปสเตอร์โปรโมตบริการรับเซอร์วิสดันเจี้ยน **Digimon Masters Online** สำหรับโพสต์ Facebook.
 สร้างจาก HTML (data-driven) แล้ว export เป็น PNG ความละเอียดสูง.
@@ -6,7 +6,7 @@
 ## โครงสร้าง
 
 ```
-dmo-dungeon-service/
+dmo-poster-studio/
 ├── src/
 │   ├── poster.html          # โปสเตอร์ (อ่าน data/poster.json, inline CSS)
 │   └── data/poster.json     # single source — 6 ดันเจี้ยน + brand/ราคา

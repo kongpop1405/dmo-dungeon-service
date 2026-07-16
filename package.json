@@ -1,7 +1,7 @@
 {
-  "name": "dmo-dungeon-service",
+  "name": "dmo-poster-studio",
   "version": "1.0.0",
-  "description": "DMO Dungeon Service — FB poster generator (HTML -> PNG)",
+  "description": "DMO Poster Studio — FB poster generator (HTML -> PNG)",
   "type": "module",
   "scripts": {
     "serve": "python -m http.server 8777",
