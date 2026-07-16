@@ -39,6 +39,17 @@ npm run serve            # python -m http.server 8777
 npm run export
 ```
 
+## field-map — poster.json key → ใช้ในไฟล์ไหน
+
+| JSON key | ใช้ใน | หมายเหตุ |
+|---|---|---|
+| `brand` | `poster.html`, `dungeon.html`, `pricelist.html` | subhead/status/tagline/contactNote — ชื่อ+ติดต่อ+โปรโมชันของร้าน |
+| `unlockItems` | `items.html` | แต่ละ item มี `image` (boss ตัวใหญ่) + `tooltip` (รูป info ในเกม, path `../assets/tooltips/`) |
+| `dungeons` | `poster.html` (overview การ์ดรวม), `dungeon.html` (โปสเตอร์เดี่ยวต่อดัน ผ่าน `?id=<id>`), `pricelist.html` (ตารางราคารวม) | `theme` = key จับคู่สี CSS var ใน `.poster[data-t="..."]`, `image` = path `../assets/boss/` |
+| `trate.html` | — ไม่อ่าน `poster.json` | เครื่องมือคำนวณเรทแยก ไม่ใช่ poster template — ไม่มี `export_trate.mjs` คู่กัน (by design) |
+
+`src/theme.css` = reset + palette กลางของ 4 poster template (poster/dungeon/pricelist/items) — layout เฉพาะ (gradient/frame-c/padding) ยังอยู่ inline ในแต่ละไฟล์เพราะต่างกันจริงต่อ template
+
 ## หมายเหตุ
 
 - **poster.json = single source.** แก้ที่เดียว reflect ทั้งโปสเตอร์.
