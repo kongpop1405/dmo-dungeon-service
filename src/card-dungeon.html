@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMO — Dungeon Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Share+Tech+Mono&family=Kanit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --deep:#020912; --base:#04101F; --panel:rgba(8,20,40,.78);
+    --blue:#00B4FF; --gold:#FFD700; --silver:#E6F2FF;
+    --txt:#DCEEFF; --mut:#6E8FB8; --grid:rgba(0,180,255,.05); --grn:#3FDD7A;
+    --font-display:'Orbitron',sans-serif;
+    /* โทนต่อดันเจี้ยน — JS ทับจาก dungeon.tone ใน json */
+    --tone:#00B4FF; --tdim:rgba(0,180,255,.5); --tsoft:rgba(0,180,255,.12); --tacc:#4FD0FF;
+    /* กล่องติดต่อ — default = Discord blurple wordmark (โลโก้บน/ชื่อล่าง)
+       JS ทับจาก brand.contact.style ใน json */
+    --cdim:rgba(88,101,242,.55); --csoft:rgba(88,101,242,.16); --cglow:rgba(88,101,242,.7);
+    --cw:72%; --cdir:column; --cgap:6px; --cfs:16px;
+  }
+  body{
+    background:#020912; color:var(--txt); font-family:'Kanit',sans-serif;
+    display:flex; justify-content:center; padding:24px 12px;
+  }
+  /* กว้าง 1080 คงที่ — สูงยืดตามเนื้อ (รูปเต็มกว้าง ไม่ครอป ไม่เว้นข้าง)
+     min-height 1350 = สัดส่วน FB 4:5 เป็นอย่างต่ำ */
+  .poster{
+    position:relative; width:1080px; min-height:1350px; max-width:100%;
+    background:radial-gradient(ellipse 90% 45% at 50% 0%,#0c2344 0%,#081a33 45%,#06122a 100%);
+    border:1px solid rgba(0,180,255,.25); overflow:hidden;
+    padding:46px 48px 42px; display:flex; flex-direction:column; gap:30px;
+    /* content สั้นกว่า canvas — เกลี่ยช่องว่างรอบ ไม่ให้กองที่ก้น */
+    justify-content:center;
+  }
+  .poster::before{
+    content:''; position:absolute; inset:0;
+    background-image:
+      linear-gradient(0deg,var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:46px 46px; pointer-events:none; z-index:0;
+  }
+  .poster::after{
+    content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:radial-gradient(ellipse 80% 50% at 50% 40%,var(--tsoft),transparent 64%);
+  }
+  .poster > *{position:relative; z-index:1}
+
+  .frame-c{position:absolute; width:36px; height:36px; border:2px solid var(--tone); z-index:5; pointer-events:none; opacity:.7}
+  .frame-c.tl{top:14px;left:14px;border-right:none;border-bottom:none}
+  .frame-c.tr{top:14px;right:14px;border-left:none;border-bottom:none}
+  .frame-c.bl{bottom:14px;left:14px;border-right:none;border-top:none}
+  .frame-c.br{bottom:14px;right:14px;border-left:none;border-top:none}
+
+  /* ═══ HEADER ═══ */
+  .ph{display:flex; justify-content:space-between; align-items:flex-start;
+      border-bottom:1px solid rgba(0,180,255,.22); padding-bottom:20px;}
+  .ph-l .eyebrow{font-family:var(--font-display); font-size:14px; font-weight:600; letter-spacing:.34em; color:var(--mut)}
+  .ph-l .eyebrow:not(:empty)::before{content:'— '} .ph-l .eyebrow:not(:empty)::after{content:' —'}
+  .ph-l .t1{font-family:var(--font-display); font-size:52px; font-weight:900; letter-spacing:.04em; line-height:1;
+    background:linear-gradient(180deg,#FFE680 0%,#FFD700 50%,#C99700 100%); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.5)); margin-top:5px}
+  .ph-l .tag{font-size:14px; color:var(--mut); letter-spacing:.05em; margin-top:7px}
+  .ph-l .tag b{color:var(--blue)}
+  .ph-r{text-align:right; padding-top:6px}
+  .ph-r .tier:not(:empty){display:inline-block; font-family:var(--font-display); font-size:15px; font-weight:700;
+    letter-spacing:.2em; color:var(--tacc); border:1px solid var(--tdim);
+    background:rgba(2,9,18,.6); padding:7px 16px}
+
+  /* ═══ TITLE BLOCK ═══ */
+  .titleblk{text-align:center}
+  .titleblk .kicker{font-family:var(--font-display); font-size:14px; font-weight:700; letter-spacing:.3em; color:var(--tacc)}
+  .titleblk .kicker::before{content:'// '} .titleblk .kicker::after{content:' //'}
+  .titleblk .dg-title{font-family:var(--font-display); font-size:62px; font-weight:900; line-height:.98; letter-spacing:.01em;
+    color:var(--tacc); text-transform:uppercase; text-shadow:0 2px 4px rgba(0,0,0,.6), 0 0 14px var(--tdim); margin-top:8px}
+
+  /* ═══ SCREENSHOT STAGE — content หลัก, ใหญ่เต็มกว้าง ═══ */
+  /* flex:1 1 auto + min-height:0 — ยุบได้เมื่อรูปรวมสูงเกิน canvas */
+  .shots{flex:1 1 auto; display:flex; flex-direction:column; gap:18px; min-height:0}
+  .shot{position:relative; border:1px solid var(--tdim); background:rgba(0,0,0,.35); overflow:hidden;
+    box-shadow:inset 0 0 30px rgba(0,0,0,.5), 0 6px 24px rgba(0,0,0,.4)}
+  .shot::before{content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--tone); box-shadow:0 0 14px var(--tone); z-index:3}
+  .shot .cap{position:absolute; top:11px; left:14px; z-index:4; font-family:var(--font-display); font-size:13px; font-weight:700;
+    letter-spacing:.2em; color:var(--tacc); background:rgba(2,9,18,.8); border:1px solid var(--tdim); padding:5px 14px}
+  .shot img{width:100%; display:block}
+  /* result = แถบสรุปเตี้ย ปล่อยสูงตามสัดส่วนรูป ห้ามครอปแนวนอน (ปุ่ม Exit อยู่ริมขวา) */
+  .shot.result{flex:0 0 auto}
+  /* select = เต็มกว้างเสมอ ไม่เว้นข้าง — สูงตามสัดส่วนรูป (ไม่ใช้ contain ที่ทำ letterbox ซ้าย/ขวา) */
+  .shot.select{flex:0 0 auto; min-width:0; display:block}
+  .shot.select > img{width:100%; height:auto; display:block}
+  /* ซ้อนแผง digimon เต็มพื้นที่ว่างใต้รายชื่อดันเจี้ยน
+     วัดจากรูปจริง (893x698): การ์ดเนเวอร์แลนด์ x 2.02%→26.2% จบที่ y 42.3%
+     ขอบล่าง panel y 98.7% ⇒ ช่องว่าง = top 42.3%..98.7%, ขอบซ้าย/ขวาตามการ์ด */
+  /* กล่องครอบเต็มช่องว่าง แต่ไม่มีกรอบ/พื้นหลัง — กันแถบดำโผล่บน/ล่างจาก contain
+     รูปจัดกลางแนวตั้ง กว้างเต็มช่อง สูงตามสัดส่วนจริง */
+  /* กล่องสูงตามรูปเป๊ะ (ไม่ผูก bottom) — ผูก bottom ทำให้กล่องสูงเกินสัดส่วนรูป
+     แล้วเห็นพื้นแผงของภาพ select โผล่เป็นแถบมืดบน/ล่าง */
+  .shot.select .ovl{position:absolute; left:2.02%; top:43.3%; width:24.19%; z-index:3; line-height:0}
+  .shot.select .ovl img{width:100%; height:auto; display:block;
+    border:1px solid var(--tdim); box-shadow:0 4px 18px rgba(0,0,0,.55)}
+  .shot.select .ovl[hidden]{display:none}
+
+  /* ช่องทางติดต่อ — วางในพื้นที่ว่างใต้แผง digimon (86%→98.7% ของรูป select) */
+  /* --cdir=column: โลโก้บน ชื่อล่าง (wordmark Discord)
+     --cdir=row:    โลโก้ซ้าย ชื่อขวา (glyph Facebook) */
+  /* --cw = ความกว้างโลโก้ ต้องตั้งตามสัดส่วนไฟล์: wordmark กว้าง (Discord 5.16:1) ใช้ ~72%
+     แต่ glyph จัตุรัส (Facebook 1:1) ที่ 72% จะสูงกว่า 5 เท่า ดันกล่องบวม */
+  .shot.select .contact{position:absolute; left:2.02%; top:87.5%; width:24.19%; z-index:3;
+    display:flex; flex-direction:var(--cdir); align-items:center; justify-content:center; gap:var(--cgap);
+    border:1px solid var(--cdim); background:rgba(2,9,18,.72);
+    box-shadow:0 4px 16px rgba(0,0,0,.5), inset 0 0 22px var(--csoft);
+    padding:10px 12px}
+  /* row: โลโก้ห้ามหด ชื่อกินที่เหลือ — ไม่งั้นชื่อยาวบีบโลโก้จนเบี้ยว */
+  .shot.select .contact img{width:var(--cw); height:auto; display:block; flex:none;
+    border:none; box-shadow:none; filter:drop-shadow(0 0 6px var(--cglow))}
+  .shot.select .contact .id{font-family:var(--font-display); font-size:var(--cfs); font-weight:700;
+    letter-spacing:.05em; color:#EAF0FF; text-shadow:0 1px 3px rgba(0,0,0,.8); line-height:1.15;
+    min-width:0; overflow-wrap:break-word}
+  .shot.select .contact[hidden]{display:none}
+
+  /* ═══ ERROR STATE — ต้องเห็นชัดตอน export ไม่ใช่ได้ PNG เปล่า ═══ */
+  .err{display:none; border:2px solid #FF4D6A; background:rgba(255,77,106,.12); color:#FF9DAF;
+    padding:20px 24px; font-family:'Share Tech Mono',monospace; font-size:16px; word-break:break-all}
+  body[data-error] .err{display:block}
+  body[data-error] .shots, body[data-error] .titleblk{display:none}
+</style>
+</head>
+<body>
+  <div class="poster" id="poster">
+    <span class="frame-c tl"></span><span class="frame-c tr"></span>
+    <span class="frame-c bl"></span><span class="frame-c br"></span>
+
+    <div class="ph">
+      <div class="ph-l">
+        <div class="eyebrow" id="eyebrow"></div>
+        <div class="t1" id="brandTitle"></div>
+        <div class="tag" id="tag"></div>
+      </div>
+      <div class="ph-r"><span class="tier" id="tier"></span></div>
+    </div>
+
+    <div class="err" id="err"></div>
+
+    <div class="titleblk">
+      <div class="kicker">DUNGEON</div>
+      <div class="dg-title" id="dgTitle"></div>
+    </div>
+
+    <div class="shots">
+      <div class="shot result"><span class="cap">CLEAR RESULT</span><img id="shotResult" alt="clear result"></div>
+      <div class="shot select">
+        <span class="cap">DUNGEON</span>
+        <img id="shotSelect" alt="dungeon select">
+        <div class="ovl" id="digimonBox" hidden><img id="shotDigimon" alt="digimon stats"></div>
+        <div class="contact" id="contactBox" hidden>
+          <img id="contactIcon" alt="contact">
+          <span class="id" id="contactId"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+// ?d=<slug> เลือกดันเจี้ยน — default master2 เพื่อ backward-compat
+const slug = (new URLSearchParams(location.search).get('d') || 'master2').replace(/[^a-z0-9-]/gi, '');
+const srcUrl = 'data/cards/' + slug + '.json';
+
+function fail(msg) {
+  document.body.dataset.error = msg;
+  document.getElementById('err').textContent = 'RENDER FAILED — ' + msg;
+  console.error(msg);
+}
+
+fetch(srcUrl)
+  .then(r => { if (!r.ok) throw new Error(r.status + ' ' + srcUrl); return r.json() })
+  .then(d => {
+    const b = d.brand, dg = d.dungeon;
+
+    eyebrow.textContent    = b.eyebrow || '';
+    brandTitle.textContent = b.t1 || '';
+    tag.innerHTML          = esc(b.subhead || '').replace(/(100%)/, '<b>$1</b>');
+    tier.textContent       = dg.tier || '';
+
+    dgTitle.textContent = dg.title;
+
+    // โทนสีต่อดันเจี้ยน
+    const t = dg.tone || {};
+    ['tone', 'tdim', 'tsoft', 'tacc'].forEach(k => {
+      if (t[k]) document.documentElement.style.setProperty('--' + k, t[k]);
+    });
+
+    shotResult.src = dg.shots.result;
+    shotSelect.src = dg.shots.select;
+
+    const imgs = [shotResult, shotSelect];
+
+    // digimon = optional — การ์ดที่ไม่มีก็ยัง render ได้ (select เต็มกว้าง)
+    if (dg.shots.digimon) {
+      shotDigimon.src = dg.shots.digimon;
+      digimonBox.hidden = false;
+      imgs.push(shotDigimon);
+    }
+
+    // ช่องทางติดต่อ = optional เช่นกัน
+    const ct = b.contact;
+    if (ct && ct.id) {
+      contactId.textContent = ct.id;
+      if (ct.icon) {
+        contactIcon.src = ct.icon;
+        contactIcon.alt = ct.alt || 'contact';
+        imgs.push(contactIcon);
+      } else contactIcon.hidden = true;
+
+      // สีกล่อง/ความกว้างโลโก้ ต่อช่องทาง — ไม่ตั้ง = คง default (Discord)
+      const cs = ct.style || {};
+      ['cdim', 'csoft', 'cglow', 'cw', 'cdir', 'cgap', 'cfs'].forEach(k => {
+        if (cs[k]) document.documentElement.style.setProperty('--' + k, cs[k]);
+      });
+
+      contactBox.hidden = false;
+    }
+
+    // รูปหายต้องดัง ไม่ใช่ได้กรอบว่าง
+    return Promise.all(imgs.map(img =>
+      img.decode().catch(() => {
+        throw new Error('image not found: ' + img.getAttribute('src'));
+      })
+    ));
+  })
+  .then(() => { document.body.dataset.ready = '1' })
+  .catch(e => fail(e.message));
+</script>
+</body>
+</html>

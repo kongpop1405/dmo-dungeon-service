@@ -1,0 +1,67 @@
+{
+  "brand": {
+    "eyebrow": "DIGIMON MASTERS ONLINE",
+    "t1": "DUNGEON SERVICE",
+    "subhead": "งานไว • ปลอดภัย • ไว้ใจได้ 100%",
+    "contact": {
+      "icon": "../assets/icons/discord-full.png",
+      "alt": "discord",
+      "id": "kong1412"
+    }
+  },
+  "dungeon": {
+    "slug": "neverland",
+    "tier": "NORMAL",
+    "title": "NEVERLAND",
+    "titleTh": "ดันเจี้ยนเนเวอร์แลนด์",
+    "tone": {
+      "tone": "#5BC8FF",
+      "tdim": "rgba(91,200,255,.5)",
+      "tsoft": "rgba(91,200,255,.14)",
+      "tacc": "#9EE0FF"
+    },
+    "shots": {
+      "result": "../assets/shots/neverland-result.png",
+      "select": "../assets/shots/neverland-select.png",
+      "digimon": "../assets/shots/neverland-digimon.png"
+    },
+    "grade": {
+      "rank": "S",
+      "time": "12:11",
+      "wipe": "0 / 2",
+      "party": "4 / 4"
+    },
+    "info": [
+      {
+        "ic": "🎚️",
+        "k": "ระดับความยาก",
+        "v": "ระดับทั่วไป"
+      },
+      {
+        "ic": "👥",
+        "k": "จำนวนสมาชิก",
+        "v": "สูงสุด 4 คน"
+      },
+      {
+        "ic": "🎫",
+        "k": "ไอเทมที่ใช้เข้า",
+        "v": "ไม่มีเงื่อนไข"
+      },
+      {
+        "ic": "⏱️",
+        "k": "เวลาเฉลี่ยต่อรอบ",
+        "v": "~12 นาที"
+      },
+      {
+        "ic": "✅",
+        "k": "เงื่อนไขเข้าร่วม",
+        "v": "ดิจิมอนเลเวล 160 ขึ้นไป"
+      }
+    ],
+    "digimon": {
+      "name": "AGUMON",
+      "level": 170,
+      "size": "990 cm (140.00%)"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "brand": {
+    "eyebrow": "DIGIMON MASTERS ONLINE",
+    "t1": "DUNGEON SERVICE",
+    "subhead": "งานไว • ปลอดภัย • ไว้ใจได้ 100%",
+    "contact": {
+      "icon": "../assets/icons/discord-full.png",
+      "id": "kong1412"
+    }
+  },
+  "dungeon": {
+    "slug": "master2",
+    "tier": "NORMAL",
+    "title": "MASTER 2 CHALLENGE",
+    "titleTh": "ดันเจี้ยนมาสเตอร์2 ชาเลนจ์",
+    "tone": {
+      "tone": "#00B4FF",
+      "tdim": "rgba(0,180,255,.5)",
+      "tsoft": "rgba(0,180,255,.12)",
+      "tacc": "#4FD0FF"
+    },
+    "shots": {
+      "result": "../assets/shots/master2-result.png",
+      "select": "../assets/shots/master2-select.png"
+    }
+  }
+}
