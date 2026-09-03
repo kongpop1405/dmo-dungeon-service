@@ -8,7 +8,13 @@
     "export": "node build/export_poster.mjs",
     "export:dungeons": "node build/export_dungeons.mjs",
     "export:pricelist": "node build/export_pricelist.mjs",
-    "export:items": "node build/export_items.mjs"
+    "export:items": "node build/export_items.mjs",
+    "export:card": "node build/export_card.mjs",
+    "export:master2": "node build/export_card.mjs master2",
+    "export:neverland-discord": "node build/export_card.mjs neverland-discord",
+    "export:neverland-facebook": "node build/export_card.mjs neverland-facebook",
+    "stitch:master2": "node build/stitch_master2.mjs",
+    "crop": "node build/crop_shot.mjs"
   },
   "devDependencies": {
     "playwright": "^1.61.0"
