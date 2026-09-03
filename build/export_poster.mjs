@@ -22,7 +22,7 @@ const SCALE = TARGET_W / POSTER_W;
 
 // หา chromium ของ playwright (เลี่ยง hardcode version)
 function findChromium() {
-  const base = 'C:/Users/kongp/AppData/Local/ms-playwright';
+  const base = `${process.env.LOCALAPPDATA}/ms-playwright`;
   const dir = readdirSync(base).find(d => d.startsWith('chromium-') && !d.includes('headless'));
   return `${base}/${dir}/chrome-win64/chrome.exe`;
 }

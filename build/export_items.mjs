@@ -11,7 +11,7 @@ const TARGET_W = process.env.TARGET_W ? Number(process.env.TARGET_W) : 2048;
 const SCALE = TARGET_W / 1080;
 
 function findChromium() {
-  const base = 'C:/Users/kongp/AppData/Local/ms-playwright';
+  const base = `${process.env.LOCALAPPDATA}/ms-playwright`;
   const dir = readdirSync(base).find(d => d.startsWith('chromium-') && !d.includes('headless'));
   return `${base}/${dir}/chrome-win64/chrome.exe`;
 }
