@@ -118,7 +118,7 @@
 
 <script>
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-fetch('data/card-master2.json').then(r=>r.json()).then(d=>{
+fetch('data/legacy-card-master2.json').then(r=>r.json()).then(d=>{
   const b=d.brand, dg=d.dungeon;
   eyebrow.textContent=b.eyebrow;
   tag.innerHTML=(b.subhead||'').replace(/(100%)/,'<b>$1</b>');
@@ -130,8 +130,8 @@ fetch('data/card-master2.json').then(r=>r.json()).then(d=>{
     <div class="lab">${esc(dg.price.label)}</div>
     <div class="v">${dg.price.value.toLocaleString()}<span class="u">${esc(dg.price.unit)}</span></div>`;
 
-  shotResult.src = window.__SHOT_RESULT__ || '../imagie.png';
-  shotSelect.src = window.__SHOT_SELECT__ || '../image-cropped.png';
+  shotResult.src = '../assets/shots/master2-result.png';
+  shotSelect.src = '../assets/shots/master2-select.png';
 });
 </script>
 </body>
