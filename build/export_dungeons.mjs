@@ -20,7 +20,7 @@ function findChromium() {
 }
 
 const data = JSON.parse(readFileSync(resolve(ROOT, 'src/data/poster.json'), 'utf8'));
-const outDir = resolve(ROOT, 'dist');
+const outDir = resolve(ROOT, 'dist', 'dungeons');
 mkdirSync(outDir, { recursive: true });
 
 const browser = await chromium.launch({ executablePath: findChromium() });
@@ -35,7 +35,7 @@ for (const dg of list) {
   await page.goto(`${PAGE}?id=${dg.id}`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(450); // รอ font + boss image
   const poster = page.locator('#poster');
-  const out = resolve(outDir, `dungeon-${dg.id}.png`);
+  const out = resolve(outDir, `${dg.id}.png`);
   await poster.screenshot({ path: out });
   const box = await poster.boundingBox();
   console.log(`exported ${out} @ ${Math.round(box.width*SCALE)}x${Math.round(box.height*SCALE)}px`);

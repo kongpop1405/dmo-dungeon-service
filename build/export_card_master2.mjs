@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
-import { readdirSync, existsSync } from 'fs';
+import { readdirSync, existsSync, mkdirSync } from 'fs';
 import { spawn } from 'child_process';
 import { createServer } from 'http';
 import { readFile } from 'fs/promises';
@@ -10,9 +10,12 @@ import { extname } from 'path';
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dir, '..');
 
+// legacy template (card-master2.html) — ชื่อแยกจาก cards/master2.png ของ export_card.mjs
+// ไม่งั้น 2 สคริปต์เขียนทับไฟล์เดียวกัน
 const OUT = process.env.OUT
   ? resolve(process.env.OUT)
-  : resolve(ROOT, 'dist', 'dmo-card-master2.png');
+  : resolve(ROOT, 'dist', 'cards', 'master2-legacy.png');
+mkdirSync(dirname(OUT), { recursive: true });
 
 const TARGET_W = process.env.TARGET_W ? Number(process.env.TARGET_W) : 2048;
 const POSTER_W = 1080;

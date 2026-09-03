@@ -1,14 +1,15 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
-import { readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync, mkdirSync } from 'fs';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dir, '..');
-const OUT = resolve(ROOT, 'dist', 'dmo-master2-stitch.png');
+const OUT = resolve(ROOT, 'dist', 'posters', 'master2-stitch.png');
+mkdirSync(dirname(OUT), { recursive: true });
 
 // รูปที่ user ให้ — ผล A (บน) + เลือกดัน (ล่าง)
-const IMGS = ['imagie.png', 'image.png'];
+const IMGS = ['_src-images/raw/master2-result-raw.png', '_src-images/raw/master2-select-full.png'];
 
 function dim(f) {
   const b = readFileSync(resolve(ROOT, f));

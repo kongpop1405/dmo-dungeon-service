@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
-import { readdirSync } from 'fs';
+import { readdirSync, mkdirSync } from 'fs';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dir, '..');
@@ -9,10 +9,11 @@ const ROOT = resolve(__dir, '..');
 // serve repo root ที่ :8777 (python -m http.server 8777) แล้ว poster อยู่ src/
 const URL = 'http://localhost:8777/src/poster.html';
 
-// ENV override: OUT=<path> TARGET_W=<px>  (default: FB 2048px -> dist/)
+// ENV override: OUT=<path> TARGET_W=<px>  (default: FB 2048px -> dist/posters/)
 const OUT = process.env.OUT
   ? resolve(process.env.OUT)
-  : resolve(ROOT, 'dist', 'dmo-poster-fb.png');
+  : resolve(ROOT, 'dist', 'posters', 'poster-fb.png');
+mkdirSync(dirname(OUT), { recursive: true });
 
 // FB ชอบกว้าง 2048px พอดี (ใหญ่/เล็กกว่านี้ FB resize -> แตก).
 // poster กว้าง 1080 -> scale = TARGET_W/1080

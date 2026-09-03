@@ -16,7 +16,7 @@ function findChromium() {
   return `${base}/${dir}/chrome-win64/chrome.exe`;
 }
 
-const outDir = resolve(ROOT, 'dist');
+const outDir = resolve(ROOT, 'dist', 'posters');
 mkdirSync(outDir, { recursive: true });
 
 const browser = await chromium.launch({ executablePath: findChromium() });
@@ -26,7 +26,7 @@ await page.goto(PAGE, { waitUntil: 'networkidle' });
 await page.waitForTimeout(450);
 
 const poster = page.locator('#poster');
-const out = resolve(outDir, 'dmo-unlock-items.png');
+const out = resolve(outDir, 'unlock-items.png');
 await poster.screenshot({ path: out });
 const box = await poster.boundingBox();
 await browser.close();
