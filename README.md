@@ -50,6 +50,9 @@ npm run export
 · ลงเว็บ dmo-decks: `NOPRICE=1 TARGET_W=1024 OUT=../dmo-decks/docs/img/ads/dungeon-service.jpg npm run export`
 (OUT ลงท้าย `.jpg` = jpeg q85) · รูปการ์ดหน้าร้านใช้ `TARGET_W=256 OUT=../dmo-decks/docs/img/shop/dungeon-service.jpg`
 
+ไอเทมปลดร่างทีละชิ้น (`unlockItems.items[].id` ใน poster.json): `ONLY=<id> npm run export:items` → `dist/posters/item-<id>.png`
+· ลงเว็บ: `ONLY=armageddemon-pkg TARGET_W=1024 OUT=../dmo-decks/docs/img/ads/armageddemon-pkg.jpg npm run export:items` (ทำซ้ำกับ `apocalymon-pkg` · `source-of-sin`)
+
 ## การ์ดดันเจี้ยนเดี่ยว (card-dungeon)
 
 การ์ด 1 ดันเจี้ยน/1 ใบ (FB 4:5) — **template เดียว ใช้ซ้ำทุกดันเจี้ยน** เลือกด้วย slug.

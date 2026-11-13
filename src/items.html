@@ -97,6 +97,9 @@
   .pf b{color:var(--gold)} .pf .grn{color:var(--grn)}
   .pay-row{display:flex; gap:8px; justify-content:center; margin:6px 0}
   .pay-chip{font-size:12px; font-weight:700; color:#fff; padding:5px 12px; border-radius:6px; border:1px solid rgba(255,255,255,.2)}
+  /* ?only=<id> = ชิ้นเดียวต่อรูป (โฆษณาเว็บ dmo-decks) — กว้างเท่าคอลัมน์เดิม ตัวหนังสือไม่ต้องปรับ */
+  .poster.single{width:420px}
+  .poster.single .grid{grid-template-columns:1fr}
   .pay-chip.kbank{background:#0a8f3c} .pay-chip.scb{background:#4e2a84} .pay-chip.true{background:#ff5722}
 </style>
 </head>
@@ -113,8 +116,11 @@ const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'
 
 fetch('data/poster.json').then(r=>r.json()).then(d=>{
   const u = d.unlockItems;
+  const only = new URLSearchParams(location.search).get('only');
+  const list = only ? u.items.filter(it => it.id === only) : u.items;
+  if (only) document.getElementById('poster').classList.add('single');
 
-  document.getElementById('grid').innerHTML = u.items.map(it => {
+  document.getElementById('grid').innerHTML = list.map(it => {
     return `
       <div class="it" data-t="${it.theme}">
         <div class="it-body">
