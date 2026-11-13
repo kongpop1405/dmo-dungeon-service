@@ -12,7 +12,7 @@
 import { resolve, basename, extname } from 'path';
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
 import { ROOT, withRenderer } from './lib/render.mjs';
-import { decksDir, unlockShopIdErrors } from './lib/decks.mjs';
+import { decksDir, unlockShopIdErrors, dungeonShopIdErrors } from './lib/decks.mjs';
 
 // Output contract per kind (width in px, jpg q85 from the render core).
 const KINDS = {
@@ -62,6 +62,10 @@ const decks = decksDir();
 if (!decks) fail(`not a dmo-decks checkout (no docs/): ${resolve(ROOT, process.env.DECKS || '../dmo-decks')} (set DECKS)`);
 if (todo.some(r => r.template === 'items.html' || r.template === 'shop-card.html')) {
   const errors = unlockShopIdErrors(decks);
+  if (errors.length) fail(errors.join('\n'));
+}
+if (todo.some(r => r.template === 'poster.html' || r.template === 'card-dungeon.html')) {
+  const errors = dungeonShopIdErrors(decks);
   if (errors.length) fail(errors.join('\n'));
 }
 const outDir = resolve(decks, 'docs', 'img', KINDS[kind].dir);

@@ -82,6 +82,9 @@ npm run export:og                     # รูปแชร์ลิงก์ -> 
 · export ก๊อป tooltip ของไอเทมไปเป็น `<รหัส>-tooltip.png` คู่กัน (ปุ่ม "ดูสินค้า" ของหน้าร้านเปิดไฟล์นี้ · validate ของ
 dmo-decks ตกเมื่อไอเทมมีรูปแต่ไม่มี tooltip) · ชื่อไฟล์ใน web-images.json ต้องตรง `shopId` ของไอเทมนั้น ไม่งั้น exit 1
 
+แพ็กดัน: `packages[].shopId = { "carry": "dg-…", "login": "dg-…" }` (ใน poster.json และ `dungeon.packages` ของการ์ด) ·
+export รูปที่ใช้ `poster.html`/`card-dungeon.html` exit 1 เมื่อ shopId ไม่มีใน `shop_prices.json` ของ dmo-decks หรือมีแถว `dg-*` ที่ไม่มีแพ็กไหนอ้าง
+
 รูปที่ไม่เปลี่ยนพิกเซลขึ้น `unchanged` ไม่เขียนทับ (hash ใน `build/render-hashes.json` — commit ไฟล์นี้) ·
 อ้างรูปใหม่ฝั่ง dmo-decks (`docs/js/ads.js` · ช่อง `รูป` ใน `docs/shop_prices.json`) แก้มือ · โพสต์ FB ที่มีราคายังออก `dist/` ตามคำสั่งเดิม
 
