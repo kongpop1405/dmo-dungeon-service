@@ -11,6 +11,7 @@
     "export:items": "node build/export_items.mjs",
     "export:card": "node build/export_card.mjs",
     "export:ads": "node build/export_web.mjs ads",
+    "export:shop": "node build/export_web.mjs shop",
     "export:neverland-discord": "node build/export_card.mjs neverland-discord",
     "export:neverland-facebook": "node build/export_card.mjs neverland-facebook",
     "export:master2": "node build/export_card.mjs master2",

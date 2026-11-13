@@ -69,10 +69,15 @@ png ที่ไบต์เท่าไฟล์เดิมไม่ถูก�
 ```bash
 npm run export:ads                    # โฆษณาทั้งชุด -> docs/img/ads/<file> กว้าง 1024 jpg q85
 ONLY=pkg-arma npm run export:ads      # ทีละรูป (ชื่อไฟล์ไม่มี .jpg · คั่น , ได้)
+npm run export:shop                   # รูปการ์ดสินค้า -> docs/img/shop/<รหัส>.jpg 480x270 + <รหัส>-tooltip.png
 ```
 
+รูปการ์ดสินค้า (`src/shop-card.html?only=<unlockItems id>`): ป้าย 16:9 บอสชิดขวา ไม่มีชื่อ (หน้าร้านพิมพ์ชื่อใต้รูป)
+· export ก๊อป tooltip ของไอเทมไปเป็น `<รหัส>-tooltip.png` คู่กัน (ปุ่ม "ดูสินค้า" ของหน้าร้านเปิดไฟล์นี้ · validate ของ
+dmo-decks ตกเมื่อไอเทมมีรูปแต่ไม่มี tooltip) · ชื่อไฟล์ใน web-images.json ต้องตรง `shopId` ของไอเทมนั้น ไม่งั้น exit 1
+
 รูปที่ไม่เปลี่ยนพิกเซลขึ้น `unchanged` ไม่เขียนทับ (hash ใน `build/render-hashes.json` — commit ไฟล์นี้) ·
-อ้างรูปใหม่ฝั่ง dmo-decks (`docs/js/ads.js`) แก้มือ · โพสต์ FB ที่มีราคายังออก `dist/` ตามคำสั่งเดิม
+อ้างรูปใหม่ฝั่ง dmo-decks (`docs/js/ads.js` · ช่อง `รูป` ใน `docs/shop_prices.json`) แก้มือ · โพสต์ FB ที่มีราคายังออก `dist/` ตามคำสั่งเดิม
 
 ## การ์ดดันเจี้ยนเดี่ยว (card-dungeon)
 

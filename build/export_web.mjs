@@ -2,16 +2,19 @@
 // into <DECKS>/docs/img/<kind>/. Facebook posts (with prices) stay in dist/ via the
 // other export_* scripts.
 //   node build/export_web.mjs ads            every row of that kind
+//   node build/export_web.mjs shop           product card pictures + each one's
+//                                            in-game tooltip as <code>-tooltip.png
 //   ONLY=pkg-arma node build/export_web.mjs ads
 //   DECKS=<path> overrides ../dmo-decks
 import { resolve, basename, extname } from 'path';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { ROOT, withRenderer } from './lib/render.mjs';
 import { decksDir, unlockShopIdErrors } from './lib/decks.mjs';
 
 // Output contract per kind (width in px, jpg q85 from the render core).
 const KINDS = {
   ads: { dir: 'ads', width: 1024 },
+  shop: { dir: 'shop', width: 480 },
 };
 
 // CSS width each template lays #poster out at, and a viewport tall enough for it.
@@ -19,6 +22,7 @@ const TEMPLATES = {
   'poster.html': () => ({ base: 1080, viewport: { width: 1160, height: 1300 } }),
   'items.html': q => ({ base: 'only' in q ? 420 : 1080, viewport: { width: 1160, height: 1180 } }),
   'card-dungeon.html': () => ({ base: 1080, viewport: { width: 1160, height: 2400 } }),
+  'shop-card.html': () => ({ base: 480, viewport: { width: 600, height: 400 } }),
 };
 
 function fail(msg) {
@@ -51,11 +55,24 @@ if (only.length) {
 
 const decks = decksDir();
 if (!decks) fail(`not a dmo-decks checkout (no docs/): ${resolve(ROOT, process.env.DECKS || '../dmo-decks')} (set DECKS)`);
-if (todo.some(r => r.template === 'items.html')) {
+if (todo.some(r => r.template === 'items.html' || r.template === 'shop-card.html')) {
   const errors = unlockShopIdErrors(decks);
   if (errors.length) fail(errors.join('\n'));
 }
 const outDir = resolve(decks, 'docs', 'img', KINDS[kind].dir);
+
+// decks shop.html opens <code>-tooltip.png from a product's "ดูสินค้า" button, and its
+// validate fails on a product picture without one, so both are written together.
+const unlockItems = JSON.parse(readFileSync(resolve(ROOT, 'src/data/poster.json'), 'utf8')).unlockItems.items;
+const tooltips = [];
+for (const r of todo.filter(r => r.template === 'shop-card.html')) {
+  const code = r.file.replace(/\.jpg$/, '');
+  const it = unlockItems.find(x => x.id === (r.query || {}).only);
+  if (!it) fail(`web-images.json ${r.kind}/${r.file}: no unlock item ${(r.query || {}).only}`);
+  if (it.shopId !== code) fail(`web-images.json ${r.kind}/${r.file}: unlock item ${it.id} has shopId ${it.shopId}`);
+  tooltips.push({ from: resolve(ROOT, 'src', it.tooltip), out: resolve(outDir, `${code}-tooltip.png`) });
+}
+for (const t of tooltips) if (!existsSync(t.from)) fail(`tooltip not found: ${t.from}`);
 
 await withRenderer(async shoot => {
   for (const r of todo) {
@@ -70,3 +87,10 @@ await withRenderer(async shoot => {
     });
   }
 });
+
+for (const t of tooltips) {
+  const bytes = readFileSync(t.from);
+  const same = existsSync(t.out) && readFileSync(t.out).equals(bytes);
+  if (!same) writeFileSync(t.out, bytes);
+  console.log(`${same ? 'unchanged' : 'copied'} ${t.out}`);
+}
