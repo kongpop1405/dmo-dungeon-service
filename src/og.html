@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMO Tracker — og:image</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --blue:#00B4FF; --gold:#FFD700; --txt:#DCEEFF; --mut:#6E8FB8;
+    --grid:rgba(0,180,255,.05); --panel:rgba(8,20,40,.78);
+  }
+  body{background:#020912; color:var(--txt); font-family:'Kanit',sans-serif; padding:24px}
+  /* og:image contract: exactly 1200x630 (dmo-decks ticket 16) */
+  .og{
+    position:relative; width:1200px; height:630px; overflow:hidden;
+    background:radial-gradient(ellipse 90% 70% at 30% 0%,#0c2344 0%,#081a33 45%,#06122a 100%);
+    border:1px solid rgba(0,180,255,.25);
+  }
+  .og::before{
+    content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(0deg,var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:46px 46px;
+  }
+  .frame-c{position:absolute; width:40px; height:40px; border:2px solid var(--blue); z-index:3; opacity:.7}
+  .frame-c.tl{top:16px;left:16px;border-right:none;border-bottom:none}
+  .frame-c.tr{top:16px;right:16px;border-left:none;border-bottom:none}
+  .frame-c.bl{bottom:16px;left:16px;border-right:none;border-top:none}
+  .frame-c.br{bottom:16px;right:16px;border-left:none;border-top:none}
+
+  .boss{
+    position:absolute; z-index:1; right:-40px; top:0; bottom:0; width:62%;
+    background:no-repeat center right / contain;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 40%);
+            mask-image:linear-gradient(90deg,transparent 0%,#000 40%);
+  }
+  .text{
+    position:absolute; z-index:2; left:80px; right:80px; top:0; bottom:0;
+    display:flex; flex-direction:column; justify-content:center; gap:26px;
+  }
+  .og.has-boss .text{right:46%}
+  .brand{font-family:'Orbitron',sans-serif; font-size:22px; font-weight:700; letter-spacing:.42em;
+    color:var(--blue); text-shadow:0 0 8px rgba(0,180,255,.35)}
+  .title{font-family:'Orbitron','Kanit',sans-serif; font-size:88px; font-weight:900; line-height:1.02;
+    background:linear-gradient(180deg,#FFE680 0%,#FFD700 45%,#C99700 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 3px 5px rgba(0,0,0,.5))}
+  .title.th{font-family:'Kanit',sans-serif; font-weight:700; font-size:80px}
+  .sub{align-self:flex-start; font-size:30px; line-height:1.35; color:var(--txt);
+    border:1px solid rgba(0,180,255,.4); border-radius:40px; padding:8px 30px; background:rgba(0,180,255,.08)}
+
+  /* ?bg= a finished 1200x630 picture made outside this template */
+  .og.full{border:none}
+  .og.full::before{display:none}
+  .og.full img{display:block; width:1200px; height:630px; object-fit:cover}
+</style>
+</head>
+<body>
+<div class="og" id="poster"></div>
+<script src="render-ready.js"></script>
+<script>
+// One og picture per row of data/web-images.json (kind "og"):
+//   ?title=&sub=[&boss=<assets/boss name>]   text card in the poster look
+//   ?bg=<path under assets/>                 an existing 1200x630 picture as is
+(function () {
+  const q = new URLSearchParams(location.search);
+  const og = document.getElementById('poster');
+  const bg = q.get('bg');
+  if (bg) {
+    og.classList.add('full');
+    const img = document.createElement('img');
+    img.src = '../assets/' + bg;
+    img.alt = '';
+    og.appendChild(img);
+    return renderReady();
+  }
+  const title = q.get('title');
+  if (!title) return renderFail(new Error('og.html needs ?title= or ?bg='));
+  for (const c of ['tl', 'tr', 'bl', 'br']) {
+    const f = document.createElement('div');
+    f.className = 'frame-c ' + c;
+    og.appendChild(f);
+  }
+  const boss = q.get('boss');
+  if (boss) {
+    og.classList.add('has-boss');
+    const b = document.createElement('div');
+    b.className = 'boss';
+    b.style.backgroundImage = `url('../assets/boss/${boss}.png')`;
+    og.appendChild(b);
+  }
+  const text = document.createElement('div');
+  text.className = 'text';
+  const brand = document.createElement('div');
+  brand.className = 'brand';
+  brand.textContent = 'DMO TRACKER';
+  const t = document.createElement('div');
+  t.className = 'title' + (/[฀-๿]/.test(title) ? ' th' : '');
+  t.textContent = title;
+  // the site-wide picture's title is the brand itself
+  if (title.toUpperCase() !== brand.textContent) text.appendChild(brand);
+  text.appendChild(t);
+  const sub = q.get('sub');
+  if (sub) {
+    const s = document.createElement('div');
+    s.className = 'sub';
+    s.textContent = sub;
+    text.appendChild(s);
+  }
+  og.appendChild(text);
+  renderReady();
+})();
+</script>
+</body>
+</html>

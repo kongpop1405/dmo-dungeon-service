@@ -70,7 +70,13 @@ png ที่ไบต์เท่าไฟล์เดิมไม่ถูก�
 npm run export:ads                    # โฆษณาทั้งชุด -> docs/img/ads/<file> กว้าง 1024 jpg q85
 ONLY=pkg-arma npm run export:ads      # ทีละรูป (ชื่อไฟล์ไม่มี .jpg · คั่น , ได้)
 npm run export:shop                   # รูปการ์ดสินค้า -> docs/img/shop/<รหัส>.jpg 480x270 + <รหัส>-tooltip.png
+npm run export:og                     # รูปแชร์ลิงก์ -> docs/img/og/<หน้า>-<YYYYMMDD>.jpg 1200x630
 ```
+
+รูปแชร์ลิงก์ (`src/og.html`): `file` = ชื่อหน้าใน dmo-decks ไม่มี `.html` (`index` = รูปกลางของทุกหน้าที่ไม่มีรูปเอง) ·
+`?title=&sub=[&boss=<ชื่อใน assets/boss>]` การ์ดตัวหนังสือโทนโปสเตอร์ · `?bg=<path ใต้ assets/>` ใช้รูป 1200x630 ที่ทำไว้แล้วตามเดิม ·
+เนื้อรูปเปลี่ยน = เขียนชื่อวันที่ของวันนี้ ไฟล์วันก่อนอยู่ต่อ (Facebook จำรูปตาม URL) · เนื้อเดิม = `unchanged` ·
+แล้วฝั่ง dmo-decks รัน `python -X utf8 builders/og_meta.py` ให้ทุกหน้าชี้รูปวันที่ใหม่ล่าสุด
 
 รูปการ์ดสินค้า (`src/shop-card.html?only=<unlockItems id>`): ป้าย 16:9 บอสชิดขวา ไม่มีชื่อ (หน้าร้านพิมพ์ชื่อใต้รูป)
 · export ก๊อป tooltip ของไอเทมไปเป็น `<รหัส>-tooltip.png` คู่กัน (ปุ่ม "ดูสินค้า" ของหน้าร้านเปิดไฟล์นี้ · validate ของ

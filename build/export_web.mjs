@@ -4,10 +4,13 @@
 //   node build/export_web.mjs ads            every row of that kind
 //   node build/export_web.mjs shop           product card pictures + each one's
 //                                            in-game tooltip as <code>-tooltip.png
+//   node build/export_web.mjs og             link-preview pictures, one per page stem:
+//                                            <stem>-<YYYYMMDD>.jpg, a new name only
+//                                            when the picture changed (old ones stay)
 //   ONLY=pkg-arma node build/export_web.mjs ads
 //   DECKS=<path> overrides ../dmo-decks
 import { resolve, basename, extname } from 'path';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
 import { ROOT, withRenderer } from './lib/render.mjs';
 import { decksDir, unlockShopIdErrors } from './lib/decks.mjs';
 
@@ -15,6 +18,7 @@ import { decksDir, unlockShopIdErrors } from './lib/decks.mjs';
 const KINDS = {
   ads: { dir: 'ads', width: 1024 },
   shop: { dir: 'shop', width: 480 },
+  og: { dir: 'og', width: 1200 },
 };
 
 // CSS width each template lays #poster out at, and a viewport tall enough for it.
@@ -23,6 +27,7 @@ const TEMPLATES = {
   'items.html': q => ({ base: 'only' in q ? 420 : 1080, viewport: { width: 1160, height: 1180 } }),
   'card-dungeon.html': () => ({ base: 1080, viewport: { width: 1160, height: 2400 } }),
   'shop-card.html': () => ({ base: 480, viewport: { width: 600, height: 400 } }),
+  'og.html': () => ({ base: 1200, viewport: { width: 1280, height: 720 } }),
 };
 
 function fail(msg) {
@@ -61,6 +66,26 @@ if (todo.some(r => r.template === 'items.html' || r.template === 'shop-card.html
 }
 const outDir = resolve(decks, 'docs', 'img', KINDS[kind].dir);
 
+// Facebook caches a preview by its URL, so a changed og picture gets a new dated
+// name and the old file stays for links already shared; decks validate accepts an
+// unreferenced <stem>-<YYYYMMDD>.jpg only while a newer one of that stem is in use.
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+}
+function ogTarget(r) {
+  const stem = r.file.replace(/\.jpg$/, '');
+  if (!/^[a-z0-9-]+$/.test(stem)) fail(`web-images.json og/${r.file}: name must be a dmo-decks page stem`);
+  const dated = new RegExp(`^${stem}-\\d{8}\\.jpg$`);
+  const have = existsSync(outDir) ? readdirSync(outDir).filter(f => dated.test(f)).sort() : [];
+  const fresh = resolve(outDir, `${stem}-${today()}.jpg`);
+  return {
+    out: have.length ? resolve(outDir, have[have.length - 1]) : fresh,
+    writeTo: fresh,
+    key: `og/${stem}`,
+  };
+}
+
 // decks shop.html opens <code>-tooltip.png from a product's "ดูสินค้า" button, and its
 // validate fails on a product picture without one, so both are written together.
 const unlockItems = JSON.parse(readFileSync(resolve(ROOT, 'src/data/poster.json'), 'utf8')).unlockItems.items;
@@ -81,7 +106,7 @@ await withRenderer(async shoot => {
     const qs = new URLSearchParams(query).toString();
     await shoot({
       page: `src/${r.template}${qs ? `?${qs}` : ''}`,
-      out: resolve(outDir, r.file),
+      ...(kind === 'og' ? ogTarget(r) : { out: resolve(outDir, r.file) }),
       scale: KINDS[kind].width / base,
       viewport,
     });

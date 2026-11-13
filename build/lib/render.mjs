@@ -93,7 +93,10 @@ export async function withRenderer(fn) {
   const hashes = loadHashes();
   let hashesDirty = false;
 
-  async function shoot({ page: path, out, scale = 1, viewport = { width: 1160, height: 1300 }, selector = '#poster' }) {
+  // og pictures change name when their content changes, so the caller names the
+  // file now on disk (out), the file a changed picture goes to (writeTo) and a
+  // hash key that outlives both names (key).
+  async function shoot({ page: path, out, scale = 1, viewport = { width: 1160, height: 1300 }, selector = '#poster', writeTo, key: fixedKey }) {
     const tab = await browser.newPage({ deviceScaleFactor: scale, viewport });
     try {
       await tab.goto(`${origin}/${path}`, { waitUntil: 'networkidle' });
@@ -109,12 +112,12 @@ export async function withRenderer(fn) {
       let png = await stableShot(el, path);
       const box = await el.boundingBox();
       const size = `${Math.round(box.width * scale)}x${Math.round(box.height * scale)}px`;
-      const outPath = resolve(out);
+      let outPath = resolve(out);
       mkdirSync(dirname(outPath), { recursive: true });
 
       let status;
       if (/\.jpe?g$/i.test(outPath)) {
-        const key = hashKey(outPath);
+        const key = fixedKey || hashKey(outPath);
         if (hashes[key] === jpgHash(png) && existsSync(outPath)) status = 'unchanged';
         else {
           // the jpg is a separate capture; it counts only when the png taken right
@@ -128,6 +131,7 @@ export async function withRenderer(fn) {
             }
             png = await stableShot(el, path);
           }
+          if (writeTo) outPath = resolve(writeTo);
           writeFileSync(outPath, jpg);
           hashes[key] = jpgHash(png);
           hashesDirty = true;

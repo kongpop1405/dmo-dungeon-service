@@ -7,6 +7,11 @@
     { "kind": "shop", "file": "pkg-apoc.jpg", "template": "shop-card.html", "query": { "only": "apocalymon-pkg" } },
     { "kind": "shop", "file": "pkg-sin.jpg", "template": "shop-card.html", "query": { "only": "source-of-sin" } },
     { "kind": "ads", "file": "dungeon-service.jpg", "template": "poster.html", "query": { "noprice": "" } },
-    { "kind": "ads", "file": "neverland-facebook.jpg", "template": "card-dungeon.html", "query": { "d": "neverland-facebook" } }
+    { "kind": "ads", "file": "neverland-facebook.jpg", "template": "card-dungeon.html", "query": { "d": "neverland-facebook" } },
+    { "kind": "og", "file": "index.jpg", "template": "og.html", "query": { "title": "DMO TRACKER", "sub": "ติดตามอัปเดต Digimon Masters Online NA · KR · TH" } },
+    { "kind": "og", "file": "shop.jpg", "template": "og.html", "query": { "title": "ร้านค้า", "sub": "แพ็กปลดล็อก · บริการดันเจี้ยน", "boss": "armageddemon" } },
+    { "kind": "og", "file": "gear.jpg", "template": "og.html", "query": { "title": "GEAR OPTIMIZER", "sub": "หาชุดของสวม + ชิปที่ดีที่สุดตามสเตตัสที่เลือก" } },
+    { "kind": "og", "file": "seal-patch-th-97.jpg", "template": "og.html", "query": { "title": "ซีลแพทช์ TH 12.11.2026", "sub": "รายละเอียดตารางแลก + เครื่องคำนวณ" } },
+    { "kind": "og", "file": "susanoomon-extreme-th-90.jpg", "template": "og.html", "query": { "bg": "og/susanoomon-extreme-th-90.png" } }
   ]
 }
