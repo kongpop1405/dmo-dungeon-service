@@ -1,45 +1,32 @@
-import { chromium } from 'playwright';
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-import { readdirSync, readFileSync, mkdirSync } from 'fs';
-
-const __dir = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dir, '..');
-
-// serve repo root ที่ :8777 (python -m http.server 8777)
-const PAGE = 'http://localhost:8777/src/dungeon.html';
-
-// FB ชอบกว้าง 2048px พอดี. poster กว้าง 1080 -> scale = TARGET_W/1080
-const TARGET_W = process.env.TARGET_W ? Number(process.env.TARGET_W) : 2048;
-const SCALE = TARGET_W / 1080;
-
-function findChromium() {
-  const base = `${process.env.LOCALAPPDATA}/ms-playwright`;
-  const dir = readdirSync(base).find(d => d.startsWith('chromium-') && !d.includes('headless'));
-  return `${base}/${dir}/chrome-win64/chrome.exe`;
-}
+import { resolve } from 'path';
+import { readFileSync } from 'fs';
+import { ROOT, withRenderer, scaleFor } from './lib/render.mjs';
 
 const data = JSON.parse(readFileSync(resolve(ROOT, 'src/data/poster.json'), 'utf8'));
-const outDir = resolve(ROOT, 'dist', 'dungeons');
-mkdirSync(outDir, { recursive: true });
 
-const browser = await chromium.launch({ executablePath: findChromium() });
-const page = await browser.newPage({ deviceScaleFactor: SCALE });
-await page.setViewportSize({ width: 1160, height: 1180 });
-
-// filter: ENV ONLY="kaiser,darkweb" -> export เฉพาะที่ระบุ
-const only = process.env.ONLY ? process.env.ONLY.split(',').map(s=>s.trim()) : null;
+// ONLY="kaiser,darkweb" -> export เฉพาะที่ระบุ
+const only = process.env.ONLY ? [...new Set(process.env.ONLY.split(',').map(s => s.trim()).filter(Boolean))] : null;
 const list = only ? data.dungeons.filter(d => only.includes(d.id)) : data.dungeons;
-
-for (const dg of list) {
-  await page.goto(`${PAGE}?id=${dg.id}`, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(450); // รอ font + boss image
-  const poster = page.locator('#poster');
-  const out = resolve(outDir, `${dg.id}.png`);
-  await poster.screenshot({ path: out });
-  const box = await poster.boundingBox();
-  console.log(`exported ${out} @ ${Math.round(box.width*SCALE)}x${Math.round(box.height*SCALE)}px`);
+if (only && list.length !== only.length) {
+  const known = data.dungeons.map(d => d.id);
+  console.error(`unknown dungeon id: ${only.filter(id => !known.includes(id)).join(', ')} (have: ${known.join(', ')})`);
+  process.exit(1);
 }
 
-await browser.close();
+// OUT ใช้ได้เมื่อเลือกดันเดียว (OUT=*.jpg -> jpeg q85)
+if (process.env.OUT && list.length !== 1) {
+  console.error('OUT needs exactly one dungeon (ONLY=<id>)');
+  process.exit(1);
+}
+
+await withRenderer(async shoot => {
+  for (const dg of list) {
+    await shoot({
+      page: `src/dungeon.html?id=${encodeURIComponent(dg.id)}`,
+      out: process.env.OUT ? resolve(process.env.OUT) : resolve(ROOT, 'dist', 'dungeons', `${dg.id}.png`),
+      scale: scaleFor(1080),
+      viewport: { width: 1160, height: 1180 },
+    });
+  }
+});
 console.log(`done — ${list.length} poster(s)`);

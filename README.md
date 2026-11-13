@@ -8,12 +8,16 @@
 ```
 dmo-dungeon-service/
 ├── src/
+│   ├── render-ready.js      # บอกแกน render ว่าวาดครบ (data-ready) หรือพัง (data-error)
 │   ├── poster.html          # โปสเตอร์ (อ่าน data/poster.json, inline CSS)
 │   └── data/poster.json     # single source — 6 ดันเจี้ยน + brand/ราคา
 ├── assets/
 │   └── boss/                # รูป boss 6 ตัว (removebg โปร่ง)
 ├── build/
-│   └── export_poster.mjs    # render HTML -> PNG ผ่าน Playwright
+│   ├── lib/render.mjs       # แกน render กลาง: server node พอร์ตว่าง + chromium + รอ data-ready
+│   ├── export_*.mjs         # สคริปต์ export ต่อชนิด (ใช้แกนกลาง)
+│   ├── compare.mjs          # เทียบพิกเซล png 2 โฟลเดอร์
+│   └── render-hashes.json   # hash png ของรูป jpg ที่ export (ข้ามเขียน jpg เมื่อพิกเซลเท่าเดิม)
 ├── dist/                    # output แยกตามชนิด
 │   ├── cards/<dungeon>/     # การ์ดดันเจี้ยน แยกโฟลเดอร์ต่อดัน — <variant>.png
 │   ├── posters/             # โปสเตอร์ (poster-fb · pricelist · unlock-items · master2-stitch)
@@ -34,17 +38,21 @@ dmo-dungeon-service/
 # 1. ติดตั้ง dep (ครั้งแรก)
 npm install
 
-# 2. start static server (terminal แยก)
-npm run serve            # python -m http.server 8777
-
-# 3. แก้ข้อมูล/ดีไซน์
+# 2. แก้ข้อมูล/ดีไซน์
 #    - ราคา/ชื่อ/boss     -> src/data/poster.json
 #    - layout/สี/ขนาด     -> src/poster.html
-#    ดูสดที่ http://localhost:8777/src/poster.html
+#    ดูสด: npm run serve (python -m http.server 8777) แล้วเปิด http://localhost:8777/src/poster.html
 
-# 4. export PNG (ออก dist/posters/poster-fb.png @ 2048px)
+# 3. export PNG (ออก dist/posters/poster-fb.png @ 2048px) — ไม่ต้องเปิด server
 npm run export
 ```
+
+ทุกสคริปต์ export เปิด server เองที่พอร์ตว่าง แล้วรอเพจตั้ง `body[data-ready="1"]` (template โหลด
+`src/render-ready.js` แล้วเรียก `renderReady()` หลังวาดเสร็จ · `card-dungeon.html` ตั้งเองในสคริปต์ของมัน) ·
+ข้อมูลหรือรูปพัง → `body[data-error]` → export exit 1 ไม่ได้รูปเปล่า · `OUT` ลงท้าย `.jpg` = jpeg q85 ทุกคำสั่ง ·
+png ที่ไบต์เท่าไฟล์เดิมไม่ถูกเขียนทับ · jpg ข้ามเมื่อ hash png ตรง `build/render-hashes.json` (commit ไฟล์นี้)
+
+เทียบรูปก่อน/หลังแก้ template: `node build/compare.mjs <โฟลเดอร์ฐาน> <โฟลเดอร์ใหม่>` (exit 1 เมื่อพิกเซลต่าง)
 
 โปสเตอร์ไม่มีราคา (การ์ดไม่มี "เริ่มต้น ... บาท"): `NOPRICE=1 npm run export` → `dist/posters/poster-fb-noprice.png`
 · ลงเว็บ dmo-decks: `NOPRICE=1 TARGET_W=1024 OUT=../dmo-decks/docs/img/ads/dungeon-service.jpg npm run export`
@@ -97,7 +105,7 @@ node build/export_card.mjs <slug>          # -> dist/cards/<dungeon>/<variant>.p
 รูปโฆษณาเว็บ dmo-decks: `npm run export:ad -- <slug>` → `../dmo-decks/docs/img/ads/<slug>.jpg`
 กว้าง 1024 jpg q85 (~200 KB) · โฟลเดอร์อื่นตั้ง `AD_DIR` · แล้วชี้ `docs/js/ads.js` ฝั่ง dmo-decks ไปที่ไฟล์นั้น
 
-ดูสดที่ `http://localhost:8777/src/card-dungeon.html?d=<slug>` (ต้อง `npm run serve` ก่อน).
+ดูสดที่ `http://localhost:8777/src/card-dungeon.html?d=<slug>` (ต้อง `npm run serve` ก่อน · export ไม่ต้อง).
 
 ### field ใน card json
 

@@ -1,33 +1,12 @@
-import { chromium } from 'playwright';
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-import { readdirSync, mkdirSync } from 'fs';
+import { resolve } from 'path';
+import { ROOT, withRenderer, scaleFor } from './lib/render.mjs';
 
-const __dir = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dir, '..');
+// OUT=<path> (OUT=*.jpg -> jpeg q85) · TARGET_W=<px>
+const OUT = process.env.OUT ? resolve(process.env.OUT) : resolve(ROOT, 'dist', 'posters', 'pricelist.png');
 
-const PAGE = 'http://localhost:8777/src/pricelist.html';
-const TARGET_W = process.env.TARGET_W ? Number(process.env.TARGET_W) : 2048;
-const SCALE = TARGET_W / 1080;
-
-function findChromium() {
-  const base = `${process.env.LOCALAPPDATA}/ms-playwright`;
-  const dir = readdirSync(base).find(d => d.startsWith('chromium-') && !d.includes('headless'));
-  return `${base}/${dir}/chrome-win64/chrome.exe`;
-}
-
-const outDir = resolve(ROOT, 'dist', 'posters');
-mkdirSync(outDir, { recursive: true });
-
-const browser = await chromium.launch({ executablePath: findChromium() });
-const page = await browser.newPage({ deviceScaleFactor: SCALE });
-await page.setViewportSize({ width: 1160, height: 1400 });
-await page.goto(PAGE, { waitUntil: 'networkidle' });
-await page.waitForTimeout(450);
-
-const poster = page.locator('#poster');
-const out = resolve(outDir, 'pricelist.png');
-await poster.screenshot({ path: out });
-const box = await poster.boundingBox();
-await browser.close();
-console.log(`exported ${out} @ ${Math.round(box.width*SCALE)}x${Math.round(box.height*SCALE)}px`);
+await withRenderer(shoot => shoot({
+  page: 'src/pricelist.html',
+  out: OUT,
+  scale: scaleFor(1080),
+  viewport: { width: 1160, height: 1400 },
+}));

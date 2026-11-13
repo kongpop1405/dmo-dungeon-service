@@ -169,11 +169,12 @@
     <div class="pf" id="footer"></div>
   </div>
 
+<script src="render-ready.js"></script>
 <script>
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const id = new URLSearchParams(location.search).get('id');
 
-fetch('data/poster.json').then(r=>r.json()).then(d=>{
+loadJson('data/poster.json').then(d=>{
   const b = d.brand;
   const dg = d.dungeons.find(x => x.id === id) || d.dungeons[0];
   const node = String(d.dungeons.findIndex(x=>x.id===dg.id)+1).padStart(2,'0') + ' / ' + String(d.dungeons.length).padStart(2,'0');
@@ -213,7 +214,7 @@ fetch('data/poster.json').then(r=>r.json()).then(d=>{
   document.getElementById('footer').innerHTML =
     `ติดต่อ <b>${esc(b.contact?.fb||'')}</b> · ${(b.hours||[]).join(' ')} · ชำระผ่าน ${esc(pay)}<br>` +
     `<span class="grn">${esc(b.contactNote||'')}</span>`;
-});
+}).then(renderReady).catch(renderFail);
 </script>
 </body>
 </html>

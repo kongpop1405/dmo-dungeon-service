@@ -186,10 +186,11 @@
     <div class="grid" id="grid"></div>
   </div>
 
+<script src="render-ready.js"></script>
 <script>
 // ?noprice = ไม่โชว์ราคา (ใช้เป็นรูปสินค้า/โฆษณาที่ราคาอ่านจากร้านแทน)
 const NOPRICE = new URLSearchParams(location.search).has('noprice');
-fetch('data/poster.json').then(r=>r.json()).then(d=>{
+loadJson('data/poster.json').then(d=>{
   const b=d.brand;
   document.getElementById('subhead').innerHTML = b.subhead.replace(/(100%)/,'<b>$1</b>');
 
@@ -210,7 +211,7 @@ fetch('data/poster.json').then(r=>r.json()).then(d=>{
         </div>`}
       </div>`;
   }).join('');
-});
+}).then(renderReady).catch(renderFail);
 </script>
 </body>
 </html>

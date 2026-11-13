@@ -1,46 +1,18 @@
-import { chromium } from 'playwright';
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-import { readdirSync, mkdirSync } from 'fs';
+import { resolve } from 'path';
+import { ROOT, withRenderer, scaleFor } from './lib/render.mjs';
 
-const __dir = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dir, '..');
-
-// serve repo root ที่ :8777 (python -m http.server 8777) แล้ว poster อยู่ src/
 // NOPRICE=1 -> ซ่อนราคาในการ์ด (poster.html?noprice)
 const NOPRICE = process.env.NOPRICE === '1';
-const URL = `http://localhost:8777/src/poster.html${NOPRICE ? '?noprice' : ''}`;
 
 // ENV override: OUT=<path> TARGET_W=<px>  (default: FB 2048px -> dist/posters/)
+// OUT=*.jpg -> jpeg q85 (รูปลงเว็บ dmo-decks ให้โหลดเบา)
 const OUT = process.env.OUT
   ? resolve(process.env.OUT)
   : resolve(ROOT, 'dist', 'posters', NOPRICE ? 'poster-fb-noprice.png' : 'poster-fb.png');
-mkdirSync(dirname(OUT), { recursive: true });
 
-// FB ชอบกว้าง 2048px พอดี (ใหญ่/เล็กกว่านี้ FB resize -> แตก).
-// poster กว้าง 1080 -> scale = TARGET_W/1080
-const TARGET_W = process.env.TARGET_W ? Number(process.env.TARGET_W) : 2048;
-const POSTER_W = 1080;
-const SCALE = TARGET_W / POSTER_W;
-
-// หา chromium ของ playwright (เลี่ยง hardcode version)
-function findChromium() {
-  const base = `${process.env.LOCALAPPDATA}/ms-playwright`;
-  const dir = readdirSync(base).find(d => d.startsWith('chromium-') && !d.includes('headless'));
-  return `${base}/${dir}/chrome-win64/chrome.exe`;
-}
-
-const browser = await chromium.launch({ executablePath: findChromium() });
-const page = await browser.newPage({ deviceScaleFactor: SCALE });
-await page.setViewportSize({ width: 1160, height: 1300 });
-await page.goto(URL, { waitUntil: 'networkidle' });
-await page.waitForTimeout(500); // รอ font + boss image โหลด
-
-const poster = page.locator('#poster');
-// OUT=*.jpg -> jpeg q85 (รูปลงเว็บ dmo-decks ให้โหลดเบา)
-const JPEG = /\.jpe?g$/i.test(OUT);
-await poster.screenshot(JPEG ? { path: OUT, type: 'jpeg', quality: 85 } : { path: OUT });
-
-const box = await poster.boundingBox();
-await browser.close();
-console.log(`exported ${OUT} @ ${Math.round(box.width*SCALE)}x${Math.round(box.height*SCALE)}px`);
+await withRenderer(shoot => shoot({
+  page: `src/poster.html${NOPRICE ? '?noprice' : ''}`,
+  out: OUT,
+  scale: scaleFor(1080),
+  viewport: { width: 1160, height: 1300 },
+}));

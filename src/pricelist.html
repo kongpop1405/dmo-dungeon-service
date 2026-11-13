@@ -108,10 +108,11 @@
     <div class="pf" id="footer"></div>
   </div>
 
+<script src="render-ready.js"></script>
 <script>
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 
-fetch('data/poster.json').then(r=>r.json()).then(d=>{
+loadJson('data/poster.json').then(d=>{
   const b = d.brand;
   const total = d.dungeons.length;
 
@@ -144,7 +145,7 @@ fetch('data/poster.json').then(r=>r.json()).then(d=>{
     `<div class="pay-row">${chips}</div>` +
     `ติดต่อ <b>${esc(b.contact?.fb||'')}</b> · ${(b.hours||[]).join(' ')}<br>` +
     `<span class="grn">${esc(b.contactNote||'')}</span>`;
-});
+}).then(renderReady).catch(renderFail);
 </script>
 </body>
 </html>

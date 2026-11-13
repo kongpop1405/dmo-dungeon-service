@@ -1,7 +1,7 @@
-import { chromium } from 'playwright';
+import { launchChromium } from './lib/render.mjs';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
-import { readdirSync, readFileSync, mkdirSync } from 'fs';
+import { readFileSync, mkdirSync } from 'fs';
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dir, '..');
@@ -18,11 +18,6 @@ function dim(f) {
 function dataURI(f) {
   return 'data:image/png;base64,' + readFileSync(resolve(ROOT, f)).toString('base64');
 }
-function findChromium() {
-  const base = `${process.env.LOCALAPPDATA}/ms-playwright`;
-  const d = readdirSync(base).find(x => x.startsWith('chromium-') && !x.includes('headless'));
-  return `${base}/${d}/chrome-win64/chrome.exe`;
-}
 
 const W = Math.max(...IMGS.map(f => dim(f).w));            // กว้างสุด = canvas width
 const rows = IMGS.map(f => { const { w, h } = dim(f); return { uri: dataURI(f), h: Math.round(h * W / w) }; });
@@ -38,7 +33,7 @@ const html = `<!DOCTYPE html><html><head><style>
   </div>
 </body></html>`;
 
-const browser = await chromium.launch({ executablePath: findChromium() });
+const browser = await launchChromium();
 const page = await browser.newPage({ deviceScaleFactor: 1 });
 await page.setViewportSize({ width: W, height: totalH });
 await page.setContent(html, { waitUntil: 'networkidle' });

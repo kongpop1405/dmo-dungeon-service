@@ -116,9 +116,10 @@
     <div class="price-card" id="priceCard"></div>
   </div>
 
+<script src="render-ready.js"></script>
 <script>
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-fetch('data/legacy-card-master2.json').then(r=>r.json()).then(d=>{
+loadJson('data/legacy-card-master2.json').then(d=>{
   const b=d.brand, dg=d.dungeon;
   eyebrow.textContent=b.eyebrow;
   tag.innerHTML=(b.subhead||'').replace(/(100%)/,'<b>$1</b>');
@@ -132,7 +133,7 @@ fetch('data/legacy-card-master2.json').then(r=>r.json()).then(d=>{
 
   shotResult.src = '../assets/shots/master2-result.png';
   shotSelect.src = '../assets/shots/master2-select.png';
-});
+}).then(renderReady).catch(renderFail);
 </script>
 </body>
 </html>

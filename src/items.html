@@ -111,10 +111,11 @@
     <div class="grid" id="grid"></div>
   </div>
 
+<script src="render-ready.js"></script>
 <script>
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 
-fetch('data/poster.json').then(r=>r.json()).then(d=>{
+loadJson('data/poster.json').then(d=>{
   const u = d.unlockItems;
   const only = new URLSearchParams(location.search).get('only');
   const list = only ? u.items.filter(it => it.id === only) : u.items;
@@ -140,7 +141,7 @@ fetch('data/poster.json').then(r=>r.json()).then(d=>{
         </div>
       </div>`;
   }).join('');
-});
+}).then(renderReady).catch(renderFail);
 </script>
 </body>
 </html>

@@ -1,17 +1,11 @@
-import { chromium } from 'playwright';
-import { readdirSync, readFileSync } from 'fs';
+import { launchChromium } from './lib/render.mjs';
+import { readFileSync } from 'fs';
 
 // ตัดขอบขาว + ทำพื้นโปร่งใส ผ่าน canvas ในเบราว์เซอร์
 const [src, out] = process.argv.slice(2);
 
-function findChromium(){
-  const base = `${process.env.LOCALAPPDATA}/ms-playwright`;
-  const d = readdirSync(base).find(x => x.startsWith('chromium-') && !x.includes('headless'));
-  return `${base}/${d}/chrome-win64/chrome.exe`;
-}
-
 const uri = 'data:image/png;base64,' + readFileSync(src).toString('base64');
-const browser = await chromium.launch({ executablePath: findChromium() });
+const browser = await launchChromium();
 const page = await browser.newPage();
 
 const b64 = await page.evaluate(async (uri) => {
