@@ -1,0 +1,9 @@
+{
+  "images": [
+    { "kind": "ads", "file": "pkg-arma.jpg", "template": "items.html", "query": { "only": "armageddemon-pkg" } },
+    { "kind": "ads", "file": "pkg-apoc.jpg", "template": "items.html", "query": { "only": "apocalymon-pkg" } },
+    { "kind": "ads", "file": "pkg-sin.jpg", "template": "items.html", "query": { "only": "source-of-sin" } },
+    { "kind": "ads", "file": "dungeon-service.jpg", "template": "poster.html", "query": { "noprice": "" } },
+    { "kind": "ads", "file": "neverland-facebook.jpg", "template": "card-dungeon.html", "query": { "d": "neverland-facebook" } }
+  ]
+}

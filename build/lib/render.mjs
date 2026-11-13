@@ -50,6 +50,11 @@ function hashKey(out) {
   return relative(ROOT, out).split(sep).join('/');
 }
 
+// quality is part of the hash so changing it forces a rewrite
+function jpgHash(png) {
+  return createHash('sha256').update(png).update(`q${JPEG_QUALITY}`).digest('hex');
+}
+
 function loadHashes() {
   return existsSync(HASH_FILE) ? JSON.parse(readFileSync(HASH_FILE, 'utf8')) : {};
 }
@@ -64,6 +69,9 @@ function saveHashes(hashes) {
 // first shot then differs from every later one; take shots until two in a row match.
 const STABLE_TRIES = 10;
 const STABLE_GAP_MS = 100;
+// A long batch under memory pressure can re-raster between the png and the jpg
+// capture; settle again and retry this many times before giving up.
+const FRAME_TRIES = 3;
 
 async function stableShot(el, path) {
   let prev = await el.screenshot({ type: 'png' });
@@ -98,7 +106,7 @@ export async function withRenderer(fn) {
       await tab.evaluate(() => document.fonts.ready);
 
       const el = tab.locator(selector);
-      const png = await stableShot(el, path);
+      let png = await stableShot(el, path);
       const box = await el.boundingBox();
       const size = `${Math.round(box.width * scale)}x${Math.round(box.height * scale)}px`;
       const outPath = resolve(out);
@@ -107,17 +115,21 @@ export async function withRenderer(fn) {
       let status;
       if (/\.jpe?g$/i.test(outPath)) {
         const key = hashKey(outPath);
-        // quality is part of the hash so changing it forces a rewrite
-        const hash = createHash('sha256').update(png).update(`q${JPEG_QUALITY}`).digest('hex');
-        if (hashes[key] === hash && existsSync(outPath)) status = 'unchanged';
+        if (hashes[key] === jpgHash(png) && existsSync(outPath)) status = 'unchanged';
         else {
-          const jpg = await el.screenshot({ type: 'jpeg', quality: JPEG_QUALITY });
-          // the jpg is a separate capture; prove it came from the same frame as the hashed png
-          if (!(await el.screenshot({ type: 'png' })).equals(png)) {
-            throw new Error(`render changed between png and jpg capture: ${path}`);
+          // the jpg is a separate capture; it counts only when the png taken right
+          // after it still equals the png before it (same frame as the hash)
+          let jpg;
+          for (let attempt = 1; ; attempt++) {
+            jpg = await el.screenshot({ type: 'jpeg', quality: JPEG_QUALITY });
+            if ((await el.screenshot({ type: 'png' })).equals(png)) break;
+            if (attempt === FRAME_TRIES) {
+              throw new Error(`render changed between png and jpg capture: ${path} (${FRAME_TRIES} tries)`);
+            }
+            png = await stableShot(el, path);
           }
           writeFileSync(outPath, jpg);
-          hashes[key] = hash;
+          hashes[key] = jpgHash(png);
           hashesDirty = true;
           status = 'written';
         }

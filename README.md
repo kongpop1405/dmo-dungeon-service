@@ -55,11 +55,22 @@ png ที่ไบต์เท่าไฟล์เดิมไม่ถูก�
 เทียบรูปก่อน/หลังแก้ template: `node build/compare.mjs <โฟลเดอร์ฐาน> <โฟลเดอร์ใหม่>` (exit 1 เมื่อพิกเซลต่าง)
 
 โปสเตอร์ไม่มีราคา (การ์ดไม่มี "เริ่มต้น ... บาท"): `NOPRICE=1 npm run export` → `dist/posters/poster-fb-noprice.png`
-· ลงเว็บ dmo-decks: `NOPRICE=1 TARGET_W=1024 OUT=../dmo-decks/docs/img/ads/dungeon-service.jpg npm run export`
-(OUT ลงท้าย `.jpg` = jpeg q85) · รูปการ์ดหน้าร้านใช้ `TARGET_W=256 OUT=../dmo-decks/docs/img/shop/dungeon-service.jpg`
+· รูปการ์ดหน้าร้านใช้ `NOPRICE=1 TARGET_W=256 OUT=../dmo-decks/docs/img/shop/dungeon-service.jpg npm run export`
 
 ไอเทมปลดร่างทีละชิ้น (`unlockItems.items[].id` ใน poster.json): `ONLY=<id> npm run export:items` → `dist/posters/item-<id>.png`
-· ลงเว็บ: `ONLY=armageddemon-pkg TARGET_W=1024 OUT=../dmo-decks/docs/img/ads/armageddemon-pkg.jpg npm run export:items` (ทำซ้ำกับ `apocalymon-pkg` · `source-of-sin`)
+
+## รูปเว็บ dmo-decks (ไม่มีราคา)
+
+รายการอยู่ `src/data/web-images.json` แถวละรูป: `kind` · `file` (ชื่อตามรหัสในชีตร้าน) · `template` + `query`
+· export เขียนตรงเข้า `<DECKS>/docs/img/<kind>/` (ค่าเริ่ม `DECKS=../dmo-decks` · ไม่มี `docs/` = exit 1)
+
+```bash
+npm run export:ads                    # โฆษณาทั้งชุด -> docs/img/ads/<file> กว้าง 1024 jpg q85
+ONLY=pkg-arma npm run export:ads      # ทีละรูป (ชื่อไฟล์ไม่มี .jpg · คั่น , ได้)
+```
+
+รูปที่ไม่เปลี่ยนพิกเซลขึ้น `unchanged` ไม่เขียนทับ (hash ใน `build/render-hashes.json` — commit ไฟล์นี้) ·
+อ้างรูปใหม่ฝั่ง dmo-decks (`docs/js/ads.js`) แก้มือ · โพสต์ FB ที่มีราคายังออก `dist/` ตามคำสั่งเดิม
 
 ## การ์ดดันเจี้ยนเดี่ยว (card-dungeon)
 
@@ -102,8 +113,7 @@ cp src/data/cards/neverland-discord.json src/data/cards/<slug>.json
 node build/export_card.mjs <slug>          # -> dist/cards/<dungeon>/<variant>.png @ 2048px
 ```
 
-รูปโฆษณาเว็บ dmo-decks: `npm run export:ad -- <slug>` → `../dmo-decks/docs/img/ads/<slug>.jpg`
-กว้าง 1024 jpg q85 (~200 KB) · โฟลเดอร์อื่นตั้ง `AD_DIR` · แล้วชี้ `docs/js/ads.js` ฝั่ง dmo-decks ไปที่ไฟล์นั้น
+รูปโฆษณาเว็บ dmo-decks: เติมแถว `card-dungeon.html` + `{"d": "<slug>"}` ใน `src/data/web-images.json` แล้ว `npm run export:ads`
 
 ดูสดที่ `http://localhost:8777/src/card-dungeon.html?d=<slug>` (ต้อง `npm run serve` ก่อน · export ไม่ต้อง).
 
