@@ -20,7 +20,7 @@ dmo-dungeon-service/
 │   └── render-hashes.json   # hash png ของรูป jpg ที่ export (ข้ามเขียน jpg เมื่อพิกเซลเท่าเดิม)
 ├── dist/                    # output แยกตามชนิด
 │   ├── cards/<dungeon>/     # การ์ดดันเจี้ยน แยกโฟลเดอร์ต่อดัน — <variant>.png
-│   ├── posters/             # โปสเตอร์ (poster-fb · pricelist · unlock-items · master2-stitch)
+│   ├── posters/             # โปสเตอร์ (poster-fb · pricelist · unlock-items)
 │   ├── dungeons/            # โปสเตอร์รายดันเจี้ยน — <id>.png
 │   └── docs/                # ไฟล์แจก (pptx)
 ├── assets/shots/            # รูปในการ์ด — <slug>-result|select|digimon.png
@@ -114,6 +114,8 @@ cp src/data/cards/neverland-discord.json src/data/cards/<slug>.json
 # 4. export
 node build/export_card.mjs <slug>          # -> dist/cards/<dungeon>/<variant>.png @ 2048px
 ```
+
+การ์ด Master 2: `npm run export:master2` (template เดียวกัน slug `master2`)
 
 รูปโฆษณาเว็บ dmo-decks: เติมแถว `card-dungeon.html` + `{"d": "<slug>"}` ใน `src/data/web-images.json` แล้ว `npm run export:ads`
 

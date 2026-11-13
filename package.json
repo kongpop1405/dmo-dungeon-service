@@ -13,7 +13,7 @@
     "export:ads": "node build/export_web.mjs ads",
     "export:neverland-discord": "node build/export_card.mjs neverland-discord",
     "export:neverland-facebook": "node build/export_card.mjs neverland-facebook",
-    "stitch:master2": "node build/stitch_master2.mjs",
+    "export:master2": "node build/export_card.mjs master2",
     "crop": "node build/crop_shot.mjs",
     "compare": "node build/compare.mjs"
   },
