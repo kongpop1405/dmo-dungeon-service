@@ -46,6 +46,10 @@ npm run serve            # python -m http.server 8777
 npm run export
 ```
 
+โปสเตอร์ไม่มีราคา (การ์ดไม่มี "เริ่มต้น ... บาท"): `NOPRICE=1 npm run export` → `dist/posters/poster-fb-noprice.png`
+· ลงเว็บ dmo-decks: `NOPRICE=1 TARGET_W=1024 OUT=../dmo-decks/docs/img/ads/dungeon-service.jpg npm run export`
+(OUT ลงท้าย `.jpg` = jpeg q85) · รูปการ์ดหน้าร้านใช้ `TARGET_W=256 OUT=../dmo-decks/docs/img/shop/dungeon-service.jpg`
+
 ## การ์ดดันเจี้ยนเดี่ยว (card-dungeon)
 
 การ์ด 1 ดันเจี้ยน/1 ใบ (FB 4:5) — **template เดียว ใช้ซ้ำทุกดันเจี้ยน** เลือกด้วย slug.

@@ -187,6 +187,8 @@
   </div>
 
 <script>
+// ?noprice = ไม่โชว์ราคา (ใช้เป็นรูปสินค้า/โฆษณาที่ราคาอ่านจากร้านแทน)
+const NOPRICE = new URLSearchParams(location.search).has('noprice');
 fetch('data/poster.json').then(r=>r.json()).then(d=>{
   const b=d.brand;
   document.getElementById('subhead').innerHTML = b.subhead.replace(/(100%)/,'<b>$1</b>');
@@ -202,10 +204,10 @@ fetch('data/poster.json').then(r=>r.json()).then(d=>{
           <div class="dg-title">${dg.title}</div>
           <div class="dg-titleth">${dg.titleTh}</div>
         </div>
-        <div class="dg-price">
+        ${NOPRICE ? '' : `<div class="dg-price">
           <div class="lab">เริ่มต้น</div>
           <div class="v">${from.toLocaleString()}<span class="u">บาท</span></div>
-        </div>
+        </div>`}
       </div>`;
   }).join('');
 });
