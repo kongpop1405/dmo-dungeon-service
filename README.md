@@ -58,6 +58,8 @@ png ที่ไบต์เท่าไฟล์เดิมไม่ถูก�
 · รูปการ์ดหน้าร้านใช้ `NOPRICE=1 TARGET_W=256 OUT=../dmo-decks/docs/img/shop/dungeon-service.jpg npm run export`
 
 ไอเทมปลดร่างทีละชิ้น (`unlockItems.items[].id` ใน poster.json): `ONLY=<id> npm run export:items` → `dist/posters/item-<id>.png`
+· ทุกไอเทมต้องมี `shopId` = รหัสในชีตร้าน (ช่อง `รหัส` ของ `<DECKS>/docs/shop_prices.json`) · ไม่มีหรือไม่ตรง →
+`export:items` และ `export:ads` exit 1 ก่อนถ่ายรูป · `id` เดิมใช้กับ `?only=` และชื่อไฟล์ tooltip ต่อ
 
 ## รูปเว็บ dmo-decks (ไม่มีราคา)
 

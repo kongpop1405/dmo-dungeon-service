@@ -5,8 +5,9 @@
 //   ONLY=pkg-arma node build/export_web.mjs ads
 //   DECKS=<path> overrides ../dmo-decks
 import { resolve, basename, extname } from 'path';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync } from 'fs';
 import { ROOT, withRenderer } from './lib/render.mjs';
+import { decksDir, unlockShopIdErrors } from './lib/decks.mjs';
 
 // Output contract per kind (width in px, jpg q85 from the render core).
 const KINDS = {
@@ -48,8 +49,12 @@ if (only.length) {
   todo = todo.filter(r => only.includes(r.file.replace(/\.jpg$/, '')));
 }
 
-const decks = resolve(ROOT, process.env.DECKS || '../dmo-decks');
-if (!existsSync(resolve(decks, 'docs'))) fail(`not a dmo-decks checkout (no docs/): ${decks} (set DECKS)`);
+const decks = decksDir();
+if (!decks) fail(`not a dmo-decks checkout (no docs/): ${resolve(ROOT, process.env.DECKS || '../dmo-decks')} (set DECKS)`);
+if (todo.some(r => r.template === 'items.html')) {
+  const errors = unlockShopIdErrors(decks);
+  if (errors.length) fail(errors.join('\n'));
+}
 const outDir = resolve(decks, 'docs', 'img', KINDS[kind].dir);
 
 await withRenderer(async shoot => {

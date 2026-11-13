@@ -1,6 +1,18 @@
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
 import { ROOT, withRenderer, scaleFor } from './lib/render.mjs';
+import { decksDir, unlockShopIdErrors } from './lib/decks.mjs';
+
+const decks = decksDir();
+if (!decks) {
+  console.error('no dmo-decks checkout to check shopId against (set DECKS)');
+  process.exit(1);
+}
+const shopIdErrors = unlockShopIdErrors(decks);
+if (shopIdErrors.length) {
+  console.error(shopIdErrors.join('\n'));
+  process.exit(1);
+}
 
 // ONLY=<item id> -> ชิ้นเดียว (items.html?only=) · OUT=*.jpg -> jpeg q85
 const ONLY = process.env.ONLY || '';
