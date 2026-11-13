@@ -87,6 +87,9 @@ cp src/data/cards/neverland-discord.json src/data/cards/<slug>.json
 node build/export_card.mjs <slug>          # -> dist/cards/<dungeon>/<variant>.png @ 2048px
 ```
 
+รูปโฆษณาเว็บ dmo-decks: `npm run export:ad -- <slug>` → `../dmo-decks/docs/img/ads/<slug>.jpg`
+กว้าง 1024 jpg q85 (~200 KB) · โฟลเดอร์อื่นตั้ง `AD_DIR` · แล้วชี้ `docs/js/ads.js` ฝั่ง dmo-decks ไปที่ไฟล์นั้น
+
 ดูสดที่ `http://localhost:8777/src/card-dungeon.html?d=<slug>` (ต้อง `npm run serve` ก่อน).
 
 ### field ใน card json

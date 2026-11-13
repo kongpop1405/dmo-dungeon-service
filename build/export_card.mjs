@@ -9,7 +9,11 @@ const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dir, '..');
 
 // slug ของดันเจี้ยน — ต้องมี src/data/cards/<slug>.json
-const slug = (process.argv[2] || 'master2').replace(/[^a-z0-9-]/gi, '');
+const args = process.argv.slice(2);
+// --ad: ส่งรูปโฆษณาเข้าเว็บ dmo-decks ตรง ๆ — jpg กว้าง 1024 ให้หน้าเว็บโหลดเบา
+// (png 2048 ของ dist หนัก ~2 MB ต่อใบ)
+const AD = args.includes('--ad');
+const slug = (args.find(a => !a.startsWith('--')) || 'master2').replace(/[^a-z0-9-]/gi, '');
 const dataFile = resolve(ROOT, 'src', 'data', 'cards', `${slug}.json`);
 if (!existsSync(dataFile)) {
   console.error(`no card data: src/data/cards/${slug}.json`);
@@ -28,12 +32,20 @@ const variant = slug === dungeonSlug
   ? 'default'
   : (slug.startsWith(dungeonSlug + '-') ? slug.slice(dungeonSlug.length + 1) : slug);
 
+const AD_DIR = process.env.AD_DIR || resolve(ROOT, '..', 'dmo-decks', 'docs', 'img', 'ads');
+if (AD && !existsSync(AD_DIR)) {
+  console.error(`no ads folder: ${AD_DIR} (set AD_DIR)`);
+  process.exit(1);
+}
 const OUT = process.env.OUT
   ? resolve(process.env.OUT)
-  : resolve(ROOT, 'dist', 'cards', dungeonSlug, `${variant}.png`);
+  : AD
+    ? resolve(AD_DIR, `${slug}.jpg`)
+    : resolve(ROOT, 'dist', 'cards', dungeonSlug, `${variant}.png`);
 mkdirSync(dirname(OUT), { recursive: true });
 
-const TARGET_W = process.env.TARGET_W ? Number(process.env.TARGET_W) : 2048;
+const TARGET_W = process.env.TARGET_W ? Number(process.env.TARGET_W) : (AD ? 1024 : 2048);
+const JPEG = /\.jpe?g$/i.test(OUT);
 const POSTER_W = 1080;
 const SCALE = TARGET_W / POSTER_W;
 const PORT = 8788;
@@ -80,7 +92,7 @@ await page.waitForTimeout(400);
 
 const poster = page.locator('#poster');
 const box = await poster.boundingBox();
-await poster.screenshot({ path: OUT });
+await poster.screenshot(JPEG ? { path: OUT, type: 'jpeg', quality: 85 } : { path: OUT });
 await browser.close();
 server.close();
 console.log(`exported ${OUT} @ ${Math.round(box.width * SCALE)}x${Math.round(box.height * SCALE)}px`);
